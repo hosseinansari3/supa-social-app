@@ -9,6 +9,7 @@ const Back = (props) => (
     class="icon"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
+    {...props}
   >
     <G id="SVGRepo_bgCarrier" stroke-width={props.strokeWidth}></G>
     <G
