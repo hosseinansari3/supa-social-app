@@ -1,0 +1,28 @@
+import { StyleSheet, Text } from "react-native";
+import Back from "./Back";
+import Home from "./Home";
+import Mail from "./Mail";
+
+const icons = {
+  home: Home,
+  back: Back,
+  mail: Mail,
+};
+
+const Icon = ({ name, ...props }) => {
+  const IconComponent = icons[name];
+  return (
+    <Text>
+      <IconComponent
+        height={props.size || 24}
+        width={props.size || 24}
+        strokeWidth={props.strokeWidth || 1.9}
+        {...props}
+      />
+    </Text>
+  );
+};
+
+export default Icon;
+
+const styles = StyleSheet.create({});
