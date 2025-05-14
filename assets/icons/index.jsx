@@ -1,12 +1,14 @@
 import { StyleSheet, Text } from "react-native";
 import Back from "./Back";
 import Home from "./Home";
+import Lock from "./Lock";
 import Mail from "./Mail";
 
 const icons = {
   home: Home,
   back: Back,
   mail: Mail,
+  lock: Lock,
 };
 
 const Icon = ({ name, ...props }) => {
