@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Icon from "../assets/icons";
 import BackButton from "../components/BackButton";
@@ -8,9 +9,12 @@ import ScreenWrapper from "../components/ScreenWrapper";
 import { theme } from "../constants/theme";
 import { hp, wp } from "./helpers/common";
 
-const router = useRouter();
-
 const Login = () => {
+  const router = useRouter();
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
+  const [loading, setLoading] = useState(false);
+
   return (
     <ScreenWrapper>
       <StatusBar style="dark" />
@@ -28,7 +32,17 @@ const Login = () => {
           <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
             Please login to continue
           </Text>
-          <Input icon={<Icon name="mail" size="26" strokeWidth="1.6" />} />
+          <Input
+            icon={<Icon name="mail" size="26" strokeWidth="2.6" />}
+            placeholder="Enter your email"
+            onChangeText={(value) => (emailRef.current = value)}
+          />
+          <Input
+            icon={<Icon name="lock" size="26" strokeWidth="2.6" />}
+            placeholder="Enter your password"
+            onChangeText={(value) => (passwordRef.current = value)}
+            secureTextEntry
+          />
         </View>
       </View>
     </ScreenWrapper>
@@ -47,5 +61,8 @@ const styles = StyleSheet.create({
     fontSize: hp(4),
     fontWeight: theme.fonts.semibold,
     color: theme.colors.text,
+  },
+  form: {
+    gap: 25,
   },
 });
