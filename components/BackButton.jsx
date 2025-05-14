@@ -7,7 +7,7 @@ const BackButton = ({ size = 26, router }) => {
     <Pressable onPress={() => router.back()} style={styles.button}>
       <Icon
         name="back"
-        strokeWidth="2.5"
+        strokeWidth="60"
         size={size}
         color={theme.colors.text}
       />
