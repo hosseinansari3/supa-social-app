@@ -1,6 +1,55 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useRef, useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
+import Icon from "../assets/icons";
+import BackButton from "../components/BackButton";
+import Button from "../components/Button";
+import Input from "../components/Input";
+import ScreenWrapper from "../components/ScreenWrapper";
+import { theme } from "../constants/theme";
+import { supabase } from "../lib/supabase";
+import { hp, wp } from "./helpers/common";
 
 const SignUp = () => {
+  const router = useRouter();
+  const nameRef = useRef("");
+
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
+  const [loading, setLoading] = useState(false);
+  const onSubmit = async () => {
+    if (!emailRef.current || !passwordRef.current) {
+      Alert.alert("Sign up", "please fill all the fields!");
+      return;
+    }
+
+    let name = nameRef.current.trim();
+    let password = passwordRef.current.trim();
+    let email = emailRef.current.trim();
+
+    setLoading(true);
+
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },
+    });
+    setLoading(false);
+
+    //console.log("sesstion", session);
+    //console.log("error", error);
+
+    if (error) {
+      Alert.alert("Sign up", error.message);
+    }
+  };
+
   return (
     <ScreenWrapper>
       <StatusBar style="dark" />
@@ -8,7 +57,7 @@ const SignUp = () => {
         <BackButton router={router} />
 
         {/*Welcome*/}
-    <View>
+        <View>
           <Text style={styles.welcomeText}>Let's</Text>
           <Text style={styles.welcomeText}>Get Started</Text>
         </View>
@@ -55,7 +104,7 @@ const SignUp = () => {
             </Text>
           </Pressable>
         </View>
-    </View>
+      </View>
     </ScreenWrapper>
   );
 };
