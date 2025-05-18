@@ -1,8 +1,10 @@
 import { StyleSheet, Text } from "react-native";
 import Back from "./Back";
+import Heart from "./Heart";
 import Home from "./Home";
 import Lock from "./Lock";
 import Mail from "./Mail";
+import Plus from "./Plus";
 import User from "./User";
 
 const icons = {
@@ -11,6 +13,8 @@ const icons = {
   mail: Mail,
   lock: Lock,
   user: User,
+  heart: Heart,
+  plus: Plus,
 };
 
 const Icon = ({ name, ...props }) => {
