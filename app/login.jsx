@@ -1,12 +1,14 @@
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "../assets/icons";
 import BackButton from "../components/BackButton";
+import Button from "../components/Button";
 import Input from "../components/Input";
 import ScreenWrapper from "../components/ScreenWrapper";
 import { theme } from "../constants/theme";
+import { supabase } from "../lib/supabase";
 import { hp, wp } from "./helpers/common";
 
 const Login = () => {
@@ -14,6 +16,28 @@ const Login = () => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const [loading, setLoading] = useState(false);
+  const onSubmit = async () => {
+    if (!emailRef.current || !passwordRef.current) {
+      Alert.alert("Login", "please fill all the fields!");
+      return;
+    }
+
+    let password = passwordRef.current.trim();
+    let email = emailRef.current.trim();
+
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    setLoading(false);
+
+    console.log("error", error);
+    if (error) {
+      Alert.alert("Sign up", error.message);
+    }
+  };
 
   return (
     <ScreenWrapper>
