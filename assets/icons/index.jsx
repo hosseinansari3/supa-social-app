@@ -3,12 +3,14 @@ import Back from "./Back";
 import Home from "./Home";
 import Lock from "./Lock";
 import Mail from "./Mail";
+import User from "./User";
 
 const icons = {
   home: Home,
   back: Back,
   mail: Mail,
   lock: Lock,
+  user: User,
 };
 
 const Icon = ({ name, ...props }) => {
