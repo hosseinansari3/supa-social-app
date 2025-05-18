@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useRouter } from "expo-router";
 import { Alert, Button, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "../../assets/icons";
@@ -10,6 +11,17 @@ import { hp, wp } from "../helpers/common";
 const home = () => {
   const { setAuth } = useAuth();
   const router = useRouter();
+=======
+import { Alert, Button, StyleSheet, Text } from "react-native";
+import ScreenWrapper from "../../components/ScreenWrapper";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../contexts/authContext";
+
+const home = () => {
+  const {user, setAuth } = useAuth();
+
+  console.log("user", user)
+>>>>>>> 10977cbf392b8fa4858d05743d8cdb106fdd58b6
 
   const onLogout = async () => {
     setAuth(null);
@@ -20,6 +32,7 @@ const home = () => {
   };
   return (
     <ScreenWrapper>
+<<<<<<< HEAD
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>LinkUp</Text>
@@ -51,6 +64,9 @@ const home = () => {
           </View>
         </View>
       </View>
+=======
+      <Text>home</Text>
+>>>>>>> 10977cbf392b8fa4858d05743d8cdb106fdd58b6
       <Button title="logout" onPress={onLogout} />
     </ScreenWrapper>
   );
@@ -58,6 +74,7 @@ const home = () => {
 
 export default home;
 
+<<<<<<< HEAD
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -82,3 +99,6 @@ const styles = StyleSheet.create({
     gap: 18,
   },
 });
+=======
+const styles = StyleSheet.create({});
+>>>>>>> 10977cbf392b8fa4858d05743d8cdb106fdd58b6

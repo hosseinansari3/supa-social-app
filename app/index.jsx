@@ -1,13 +1,13 @@
-import { router } from "expo-router";
-import { Button, Text } from "react-native";
-import ScreenWrapper from "../components/ScreenWrapper";
+import { View } from "react-native";
+import "react-native-get-random-values";
+import "react-native-url-polyfill/auto";
+import Loading from "../components/Loading";
 
 const index = () => {
   return (
-    <ScreenWrapper>
-      <Text>index</Text>
-      <Button title="wellcome" onPress={() => router.push("Welcome")} />
-    </ScreenWrapper>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Loading />
+    </View>
   );
 };
 
