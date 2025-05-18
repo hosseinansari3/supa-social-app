@@ -10,6 +10,7 @@ const icons = {
   back: Back,
   mail: Mail,
   lock: Lock,
+  user: User,
 };
 
 const Icon = ({ name, ...props }) => {
