@@ -86,4 +86,20 @@ const styles = StyleSheet.create({
   form: {
     gap: 25,
   },
+  forgetPassword: {
+    textAlign: "right",
+    fontWeight: theme.fonts.semibold,
+    color: theme.colors.text,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 5,
+  },
+  footerText: {
+    textAlign: "center",
+    color: theme.colors.text,
+    fontSize: hp(1.6),
+  },
 });
