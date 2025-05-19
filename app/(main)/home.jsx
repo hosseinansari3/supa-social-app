@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { Alert, Button, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "../../assets/icons";
+import Avatar from "../../components/Avatar";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
 import { supabase } from "../../lib/supabase";
@@ -8,7 +9,7 @@ import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
 const home = () => {
-  const { setAuth } = useAuth();
+  const { user, setAuth } = useAuth();
   const router = useRouter();
 
   const onLogout = async () => {
@@ -41,11 +42,11 @@ const home = () => {
               />
             </Pressable>
             <Pressable onPress={() => router.push("profile")}>
-              <Icon
-                name="user"
-                size={hp(3.2)}
-                strokeWidth={2}
-                color={theme.colors.text}
+              <Avatar
+                uri={user?.image}
+                size={hp(4.3)}
+                rounded={theme.radius.sm}
+                style={{}}
               />
             </Pressable>
           </View>
