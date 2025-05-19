@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
 import { hp } from "../app/helpers/common";
 import { theme } from "../constants/theme";
+import { getUserImageSrc } from "../services/imageService";
 
 const Avatar = ({
   uri,
@@ -11,7 +12,7 @@ const Avatar = ({
 }) => {
   return (
     <Image
-      source={{ uri }}
+      source={getUserImageSrc(uri)}
       transition={100}
       style={[
         styles.avatar,
