@@ -47,6 +47,20 @@ const userHeader = ({ user, router }) => {
           <Icon name="logout" />
         </TouchableOpacity>
       </View>
+
+      <View style={styles.container}>
+        <View style={{ gap: 15 }}>
+          <View style={styles.avatarContainer}>
+            <Avatar
+              uri={user?.image}
+              size={hp(12)}
+              rounded={theme.radius.xxl * 1.4}
+            />
+            <Pressable style={styles.editeIcon}>
+              <Icon name="edite" size={20} />
+            </Pressable>
+          </View>
+        </View>
       </View>
     </View>
   );
