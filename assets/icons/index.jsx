@@ -3,6 +3,7 @@ import Back from "./Back";
 import Heart from "./Heart";
 import Home from "./Home";
 import Lock from "./Lock";
+import Logout from "./Logout";
 import Mail from "./Mail";
 import Plus from "./Plus";
 import User from "./User";
