@@ -7,6 +7,30 @@ import { useAuth } from "../contexts/authContext";
 const Profile = () => {
   const { user, setAuth } = useAuth();
   const router = useRouter();
+
+  const onLogout = async () => {
+    setAuth(null);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert("sign out", "error signing out");
+    }
+  };
+
+  const handleLogout = async () => {
+    // show  confirm modal
+    Alert.alert("Confirm", "are you sure you want to log oug?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("modal cancelled"),
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        onPress: () => onLogout(),
+        style: "destructive",
+      },
+    ]);
+  };
   return (
     <ScreenWrapper bg="white">
       <Text>profile</Text>
