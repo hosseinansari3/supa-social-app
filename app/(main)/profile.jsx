@@ -73,6 +73,13 @@ const UserHeader = ({ user, router, handleLogout }) => {
               <Icon name="edite" size={20} />
             </Pressable>
           </View>
+
+          {/* username and address */}
+
+          <View style={{ alignItems: "center", gap: 4 }}>
+            <Text style={styles.userName}> {user && user?.name} </Text>
+            <Text style={styles.infoText}> {user && user?.address} </Text>
+          </View>
         </View>
       </View>
     </View>
