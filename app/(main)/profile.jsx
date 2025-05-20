@@ -3,6 +3,7 @@ import {
   Alert,
   Pressable,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -80,6 +81,25 @@ const UserHeader = ({ user, router, handleLogout }) => {
             <Text style={styles.userName}> {user && user?.name} </Text>
             <Text style={styles.infoText}> {user && user?.address} </Text>
           </View>
+
+          {/* email, phone and bio */}
+
+          <View style={{ gap: 10 }}>
+            <View style={styles.info}>
+              <Icon name="mail" size={20} color={theme.colors.textLight} />
+              <Text style={styles.info}>{user && user.email}</Text>
+            </View>
+            {user && user.phoneNumber && (
+              <View style={styles.info}>
+                <Icon name="call" size={20} color={theme.colors.textLight} />
+                <Text style={styles.info}>{user && user.phoneNumber}</Text>
+              </View>
+            )}
+
+            {user && user.bio && (
+              <Text style={styles.infoText}>{user.bio}</Text>
+            )}
+          </View>
         </View>
       </View>
     </View>
@@ -124,5 +144,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 5,
     elevation: 7,
+  },
+  userName: {
+    fontSize: hp(3),
+    fontWeight: "500",
+    color: theme.colors.textDark,
+  },
+  infoText: {
+    fontSize: hp(1.6),
+    fontWeight: "500",
+    color: theme.colors.textLight,
+  },
+  info: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
 });
