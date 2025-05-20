@@ -55,7 +55,7 @@ const UserHeader = ({ user, router, handleLogout }) => {
       style={{ flex: 1, backgroundColor: "white", paddingHorizontal: wp(4) }}
     >
       <View>
-        <Header title="profile" showBackButton={true} />
+        <Header title="profile" mb={30} />
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Icon name="logout" />
         </TouchableOpacity>
