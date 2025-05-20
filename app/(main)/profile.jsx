@@ -18,7 +18,11 @@ const userHeader = ({ user, router }) => {
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <View>
-        <Header title="profile" showBackButton />
+        <Header title="profile" showBackButton={true} />
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Icon name="logout" />
+        </TouchableOpacity>
+      </View>
       </View>
     </View>
   );
