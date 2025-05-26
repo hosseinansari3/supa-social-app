@@ -1,9 +1,11 @@
 import { StyleSheet, Text } from "react-native";
 import Back from "./Back";
 import Call from "./Call";
+import Camera from "./Camera";
 import Edite from "./Edite";
 import Heart from "./Heart";
 import Home from "./Home";
+import Location from "./Location";
 import Lock from "./Lock";
 import Logout from "./Logout";
 import Mail from "./Mail";
@@ -21,6 +23,8 @@ const icons = {
   logout: Logout,
   edite: Edite,
   call: Call,
+  camera: Camera,
+  location: Location,
 };
 
 const Icon = ({ name, ...props }) => {
