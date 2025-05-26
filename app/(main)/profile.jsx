@@ -70,7 +70,10 @@ const UserHeader = ({ user, router, handleLogout }) => {
               size={hp(12)}
               rounded={theme.radius.xxl * 1.4}
             />
-            <Pressable style={styles.editeIcon}>
+            <Pressable
+              style={styles.editeIcon}
+              onPress={() => router.push("editeProfile")}
+            >
               <Icon name="edite" size={20} />
             </Pressable>
           </View>
