@@ -16,7 +16,7 @@ import Header from "../../components/Header";
 import Input from "../../components/Input";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
-import { getUserImageSrc } from "../../services/imageService";
+import { getUserImageSrc, uploadFile } from "../../services/imageService";
 import { updateUser } from "../../services/userService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
@@ -70,6 +70,14 @@ const EditeProfile = () => {
     }
     setLoading(true);
 
+    if (typeof image == "object") {
+      //upload image
+
+      let imageRes = await uploadFile("profiles", image?.uri, true);
+      if (imageRes.success) userData.image = imageRes.data;
+      else userData.image = null;
+    }
+    //update user
     const res = await updateUser(currentUser?.id, userData);
     setLoading(false);
 
