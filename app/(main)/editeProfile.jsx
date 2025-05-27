@@ -101,7 +101,7 @@ const EditeProfile = () => {
           <View style={styles.form}>
             <View style={styles.avatarContainer}>
               <Image source={imageSource} style={styles.avatar} />
-              <Pressable style={styles.cameraIcon}>
+              <Pressable style={styles.cameraIcon} onPress={onPickImage}>
                 <Icon name="camera" size={20} strokeWidth={2.5} />
               </Pressable>
             </View>
