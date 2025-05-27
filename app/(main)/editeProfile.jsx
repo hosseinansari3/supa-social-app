@@ -86,7 +86,10 @@ const EditeProfile = () => {
       router.back();
     }
   };
-  let imageSource = getUserImageSrc(user.image);
+  let imageSource =
+    user.image && typeof user.image == "object"
+      ? { uri: user.image.uri }
+      : getUserImageSrc(user.image);
   return (
     <ScreenWrapper>
       <View style={styles.container}>
