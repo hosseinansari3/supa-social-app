@@ -1,3 +1,4 @@
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -46,7 +47,18 @@ const EditeProfile = () => {
     }
   }, [currentUser]);
 
-  const onPickImage = async () => {};
+  const onPickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images", "videos"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setUser({ ...user, image: result.assets[0] });
+    }
+  };
 
   const onSubmit = async () => {
     let userData = { ...user };
