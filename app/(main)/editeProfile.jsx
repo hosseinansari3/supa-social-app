@@ -64,7 +64,7 @@ const EditeProfile = () => {
     let userData = { ...user };
     let { name, phoneNumber, address, image, bio } = userData;
 
-    if (!name || !phoneNumber || !address || !bio) {
+    if (!name || !phoneNumber || !address || !bio || !image) {
       Alert.alert("profile", "please fill all the fields");
       return;
     }
