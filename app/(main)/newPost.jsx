@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Avatar from "../../components/Avatar";
 import Header from "../../components/Header";
 import ScreenWrapper from "../../components/ScreenWrapper";
@@ -21,6 +21,10 @@ const NewPost = () => {
               size={hp(6.5)}
               rounded={theme.radius.xl}
             />
+            <View style={{ gap: 2 }}>
+              <Text style={styles.username}>{user && user.name}</Text>
+              <Text style={styles.publicText}>Public</Text>
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -42,5 +46,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+  },
+  username: {
+    fontSize: hp(2.2),
+    fontWeight: theme.fonts.semibold,
+    color: theme.colors.text,
+  },
+  publicText: {
+    fontSize: hp(1.7),
+    fontWeight: theme.fonts.medium,
+    color: theme.colors.textLight,
   },
 });
