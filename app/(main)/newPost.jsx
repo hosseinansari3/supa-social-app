@@ -34,12 +34,12 @@ const NewPost = () => {
               <Text style={styles.username}>{user && user.name}</Text>
               <Text style={styles.publicText}>Public</Text>
             </View>
-            <View style={styles.textEditor}>
-              <RichTextEditor
-                editorRef={editorRef}
-                onChange={(body) => (bodyRef.current = body)}
-              />
-            </View>
+          </View>
+          <View style={styles.textEditor}>
+            <RichTextEditor
+              editorRef={editorRef}
+              onChange={(body) => (bodyRef.current = body)}
+            />
           </View>
         </ScrollView>
       </View>
