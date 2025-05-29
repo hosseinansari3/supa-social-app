@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { RichToolbar } from "react-native-pell-rich-editor";
+import { actions, RichToolbar } from "react-native-pell-rich-editor";
 
 const RichTextEditor = ({ editorRef, onChange }) => {
   return (
