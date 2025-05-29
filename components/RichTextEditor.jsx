@@ -17,7 +17,17 @@ const RichTextEditor = ({ editorRef, onChange }) => {
           actions.alignRight,
           actions.code,
           actions.line,
+          actions.heading1,
+          actions.heading4,
         ]}
+        iconMap={{
+          [actions.heading1]: ({ tintColor }) => (
+            <Text style={{ color: tintColor }}>H1</Text>
+          ),
+          [actions.heading4]: ({ tintColor }) => (
+            <Text style={{ color: tintColor }}>H4</Text>
+          ),
+        }}
         style={styles.richBar}
         flatContainerStyle={styles.listStyle}
         editor={editorRef}
