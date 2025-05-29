@@ -1,13 +1,22 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useRef, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Avatar from "../../components/Avatar";
 import Header from "../../components/Header";
+import RichTextEditor from "../../components/RichTextEditor";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
 import { useAuth } from "../contexts/authContext";
-import { hp } from "../helpers/common";
+import { hp, wp } from "../helpers/common";
 
 const NewPost = () => {
   const { user } = useAuth();
+  const bodyRef = useRef("");
+  const editorRef = useRef(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(file);
+
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
@@ -24,6 +33,12 @@ const NewPost = () => {
             <View style={{ gap: 2 }}>
               <Text style={styles.username}>{user && user.name}</Text>
               <Text style={styles.publicText}>Public</Text>
+            </View>
+            <View style={styles.textEditor}>
+              <RichTextEditor
+                editorRef={editorRef}
+                onChange={(body) => (bodyRef.current = body)}
+              />
             </View>
           </View>
         </ScrollView>
