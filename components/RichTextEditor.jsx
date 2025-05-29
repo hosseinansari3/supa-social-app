@@ -30,6 +30,7 @@ const RichTextEditor = ({ editorRef, onChange }) => {
         }}
         style={styles.richBar}
         flatContainerStyle={styles.listStyle}
+        selectedIconTint={theme.colors.primaryDark}
         editor={editorRef}
         disabled={false}
       />
