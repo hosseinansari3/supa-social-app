@@ -42,9 +42,9 @@ const RichTextEditor = ({ editorRef, onChange }) => {
       <RichEditor
         ref={editorRef}
         containerStyle={styles.rich}
-        editorStyle={styles.contentStyle}
-        placeholder="What's on your min?"
-        onChange={onchange}
+        editorStyle={[styles.contentStyle]}
+        placeholder={"What's on your min?"}
+        onChange={onChange}
       />
     </View>
   );
