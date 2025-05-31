@@ -10,6 +10,7 @@ import {
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
+import { Pressable } from "react-native";
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
@@ -118,6 +119,9 @@ const NewPost = () => {
                   style={{ flex: 1 }}
                 />
               )}
+              <Pressable style={styles.closeIcon} onPress={() => setFile(null)}>
+                <Icon name="delete" size={22} color="white" onpre />
+              </Pressable>
             </View>
           )}
           <View style={styles.media}>
@@ -198,5 +202,13 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.xl,
     overflow: "hidden",
     borderCurve: "continuous",
+  },
+  closeIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 7,
+    borderRadius: 50,
+    backgroundColor: "rgba(255,0,0,0.6)",
   },
 });
