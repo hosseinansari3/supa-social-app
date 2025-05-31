@@ -2,6 +2,7 @@ import { StyleSheet, Text } from "react-native";
 import Back from "./Back";
 import Call from "./Call";
 import Camera from "./Camera";
+import Delete from "./Delete";
 import Edite from "./Edite";
 import Heart from "./Heart";
 import Home from "./Home";
@@ -29,6 +30,7 @@ const icons = {
   location: Location,
   image: Image,
   video: Video,
+  delete: Delete,
 };
 
 const Icon = ({ name, ...props }) => {
