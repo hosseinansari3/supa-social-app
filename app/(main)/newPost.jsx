@@ -1,6 +1,15 @@
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
 import Header from "../../components/Header";
 import RichTextEditor from "../../components/RichTextEditor";
@@ -41,6 +50,17 @@ const NewPost = () => {
               onChange={(body) => (bodyRef.current = body)}
             />
           </View>
+          <View style={styles.media}>
+            <Text style={styles.addImageText}>add to your post</Text>
+            <View style={styles.mediaIcons}>
+              <TouchableOpacity onPress={() => onPick(true)}>
+                <Icon name="image" size={30} color={theme.colors.dark} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onPick(false)}>
+                <Icon name="video" size={30} color={theme.colors.dark} />
+              </TouchableOpacity>
+            </View>
+          </View>
         </ScrollView>
       </View>
     </ScreenWrapper>
@@ -71,5 +91,29 @@ const styles = StyleSheet.create({
     fontSize: hp(1.7),
     fontWeight: theme.fonts.medium,
     color: theme.colors.textLight,
+  },
+  media: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1.5,
+    padding: 12,
+    paddingHorizontal: 18,
+    borderRadius: theme.radius.xl,
+    borderCurve: "continuous",
+    borderColor: theme.colors.gray,
+  },
+  mediaIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  addImageText: {
+    fontSize: hp(1.9),
+    fontWeight: theme.fonts.semibold,
+    color: theme.colors.text,
+  },
+  imageIcon: {
+    borderRadius: theme.radius.md,
   },
 });
