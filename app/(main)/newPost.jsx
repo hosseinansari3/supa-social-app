@@ -192,4 +192,11 @@ const styles = StyleSheet.create({
   imageIcon: {
     borderRadius: theme.radius.md,
   },
+  file: {
+    height: hp(30),
+    width: "100%",
+    borderRadius: theme.radius.xl,
+    overflow: "hidden",
+    borderCurve: "continuous",
+  },
 });
