@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 
+import * as ImagePicker from "expo-image-picker";
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
@@ -26,6 +27,29 @@ const NewPost = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(file);
+
+  const onPick = async (isImage) => {
+    let mediaConfig = {
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    };
+    if (!isImage) {
+      mediaConfig = {
+        mediaTypes: ["videos"],
+        allowsEditing: true,
+      };
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync(mediaConfig);
+
+    console.log("file", result.assets[0]);
+
+    if (!result.canceled) {
+      setFile(result.assets[0]);
+    }
+  };
 
   return (
     <ScreenWrapper bg="white">
