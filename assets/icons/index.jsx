@@ -12,6 +12,7 @@ import Logout from "./Logout";
 import Mail from "./Mail";
 import Plus from "./Plus";
 import User from "./User";
+import Video from "./Video";
 
 const icons = {
   home: Home,
@@ -27,6 +28,7 @@ const icons = {
   camera: Camera,
   location: Location,
   image: Image,
+  video: Video,
 };
 
 const Icon = ({ name, ...props }) => {
