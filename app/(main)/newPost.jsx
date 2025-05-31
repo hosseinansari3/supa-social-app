@@ -11,6 +11,7 @@ import {
 
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
+import Button from "../../components/Button";
 import Header from "../../components/Header";
 import RichTextEditor from "../../components/RichTextEditor";
 import ScreenWrapper from "../../components/ScreenWrapper";
@@ -62,6 +63,12 @@ const NewPost = () => {
             </View>
           </View>
         </ScrollView>
+        <Button
+          buttonStyle={{ height: hp(6.2) }}
+          title="Post"
+          loading={loading}
+          hasShadow={false}
+        />
       </View>
     </ScreenWrapper>
   );
