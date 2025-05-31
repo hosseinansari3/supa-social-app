@@ -17,6 +17,7 @@ import Header from "../../components/Header";
 import RichTextEditor from "../../components/RichTextEditor";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
+import { getSupabaseFileUrl } from "../../services/imageService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
@@ -51,6 +52,37 @@ const NewPost = () => {
     }
   };
 
+  const isLocalFile = (file) => {
+    if (!file) return null;
+    if (typeof file == "object") return true;
+
+    return false;
+  };
+
+  const getFileType = (file) => {
+    if (!file) return null;
+    if (isLocalFile(file)) {
+      return file.type;
+    }
+
+    //check image or video for remote file
+    if (file.includes("postImage")) {
+      return "image";
+    }
+
+    return "video";
+  };
+
+  const getFileUri = (file) => {
+    if (!file) return null;
+
+    if (isLocalFile) {
+      return file.uri;
+    }
+
+    return getSupabaseFileUrl(file)?.uri;
+  };
+
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
@@ -75,6 +107,19 @@ const NewPost = () => {
               onChange={(body) => (bodyRef.current = body)}
             />
           </View>
+          {file && (
+            <View style={styles.file}>
+              {getFileType == "video" ? (
+                <></>
+              ) : (
+                <Image
+                  source={{ uri: getFileUri(file) }}
+                  resizeMode="cover"
+                  style={{ flex: 1 }}
+                />
+              )}
+            </View>
+          )}
           <View style={styles.media}>
             <Text style={styles.addImageText}>add to your post</Text>
             <View style={styles.mediaIcons}>
