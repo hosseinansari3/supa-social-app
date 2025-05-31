@@ -5,6 +5,7 @@ import Camera from "./Camera";
 import Edite from "./Edite";
 import Heart from "./Heart";
 import Home from "./Home";
+import Image from "./Image";
 import Location from "./Location";
 import Lock from "./Lock";
 import Logout from "./Logout";
@@ -25,6 +26,7 @@ const icons = {
   call: Call,
   camera: Camera,
   location: Location,
+  image: Image,
 };
 
 const Icon = ({ name, ...props }) => {
