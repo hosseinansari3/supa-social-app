@@ -11,7 +11,7 @@ import {
 
 import { Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
-import { Pressable } from "react-native";
+import { Alert, Pressable } from "react-native";
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
@@ -20,6 +20,7 @@ import RichTextEditor from "../../components/RichTextEditor";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
 import { getSupabaseFileUrl } from "../../services/imageService";
+import { createOrUpadtePost } from "../../services/postService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
@@ -85,6 +86,31 @@ const NewPost = () => {
     return getSupabaseFileUrl(file)?.uri;
   };
 
+  const onSubmit = async () => {
+    if (!bodyRef.current && !file) {
+      Alert.alert("Post", "Please choose an image or add post body");
+      return;
+    }
+
+    let data = {
+      file,
+      body: bodyRef.current,
+      userId: user?.id,
+    };
+
+    //create post
+    setLoading(true);
+    let res = await createOrUpadtePost(data);
+    setLoading(false);
+    if (res.success) {
+      setFile(null);
+      bodyRef.current = "";
+      editorRef.current?.setContentHTML("");
+      router.back();
+    } else {
+      Alert.alert("Post", res.msg);
+    }
+  };
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
@@ -148,6 +174,7 @@ const NewPost = () => {
           title="Post"
           loading={loading}
           hasShadow={false}
+          onPress={onSubmit}
         />
       </View>
     </ScreenWrapper>
