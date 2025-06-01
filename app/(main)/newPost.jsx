@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 
+import { Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
 import { Pressable } from "react-native";
 import Icon from "../../assets/icons";
@@ -110,8 +111,14 @@ const NewPost = () => {
           </View>
           {file && (
             <View style={styles.file}>
-              {getFileType == "video" ? (
-                <></>
+              {getFileType(file) == "video" ? (
+                <Video
+                  style={{ flex: 1 }}
+                  source={{ uri: getFileUri(file) }}
+                  useNativeControls
+                  resizeMode="cover"
+                  isLooping
+                ></Video>
               ) : (
                 <Image
                   source={{ uri: getFileUri(file) }}
