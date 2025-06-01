@@ -69,7 +69,7 @@ const NewPost = () => {
     }
 
     //check image or video for remote file
-    if (file.includes("postImage")) {
+    if (file.includes("postImages")) {
       return "image";
     }
 
