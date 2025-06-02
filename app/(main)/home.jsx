@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
+import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
 import { fetchPosts } from "../../services/postService";
@@ -12,6 +13,7 @@ import { hp, wp } from "../helpers/common";
 var limit = 0;
 const home = () => {
   const { user, setAuth } = useAuth();
+
   const router = useRouter();
 
   const [posts, setPosts] = useState([]);
@@ -67,8 +69,17 @@ const home = () => {
             </Pressable>
           </View>
         </View>
+        {/* posts */}
+        <FlatList
+          data={posts}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listStyle}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <PostCard item={item} currentUser={user} router={router} />
+          )}
+        />
       </View>
-      {/* <Button title="logout" onPress={onLogout} /> */}
     </ScreenWrapper>
   );
 };
@@ -97,5 +108,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 18,
+  },
+  listStyle: {
+    paddingTop: 20,
+    paddingHorizontal: wp(4),
   },
 });
