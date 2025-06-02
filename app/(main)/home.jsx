@@ -7,7 +7,9 @@ import Loading from "../../components/Loading";
 import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
+import { supabase } from "../../lib/supabase";
 import { fetchPosts } from "../../services/postService";
+import { getUserData } from "../../services/userService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
@@ -19,8 +21,29 @@ const home = () => {
 
   const [posts, setPosts] = useState([]);
 
+  const handlePostEvent = async (payload) => {
+    if (payload.eventType == "INSERT" && payload?.new?.id) {
+      let newPost = { ...payload.new };
+      let res = await getUserData(newPost.userId);
+      newPost.user = res.success ? res.data : {};
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
+    }
+  };
   useEffect(() => {
+    let postChannel = supabase
+      .channel("posts")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "posts" },
+        handlePostEvent
+      )
+      .subscribe();
+
     getPosts();
+
+    return () => {
+      supabase.removeChannel(postChannel);
+    };
   }, []);
 
   const getPosts = async () => {
