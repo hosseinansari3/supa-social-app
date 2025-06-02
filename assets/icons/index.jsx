@@ -13,6 +13,7 @@ import Lock from "./Lock";
 import Logout from "./Logout";
 import Mail from "./Mail";
 import Plus from "./Plus";
+import Share from "./Share";
 import ThreeDotsHorizontal from "./ThreeDotsHorizontal";
 import User from "./User";
 import Video from "./Video";
@@ -35,6 +36,7 @@ const icons = {
   delete: Delete,
   threeDotsHorizontal: ThreeDotsHorizontal,
   comment: Comment,
+  share: Share,
 };
 
 const Icon = ({ name, ...props }) => {
