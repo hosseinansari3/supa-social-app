@@ -12,6 +12,7 @@ import Lock from "./Lock";
 import Logout from "./Logout";
 import Mail from "./Mail";
 import Plus from "./Plus";
+import ThreeDotsHorizontal from "./ThreeDotsHorizontal";
 import User from "./User";
 import Video from "./Video";
 
@@ -31,6 +32,7 @@ const icons = {
   image: Image,
   video: Video,
   delete: Delete,
+  threeDotsHorizontal: ThreeDotsHorizontal,
 };
 
 const Icon = ({ name, ...props }) => {
