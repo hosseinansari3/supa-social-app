@@ -1,9 +1,12 @@
+import { Video } from "expo-av";
+import { Image } from "expo-image";
 import moment from "moment/moment";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import RenderHTML from "react-native-render-html";
 import { hp, wp } from "../app/helpers/common";
 import Icon from "../assets/icons";
 import { theme } from "../constants/theme";
+import { getSupabaseFileUrl } from "../services/imageService";
 import Avatar from "./Avatar";
 
 const textStyle = {
@@ -77,7 +80,28 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
             />
           )}
         </View>
+        {/* post image */}
+
+        {item?.file && item?.file?.includes("postImages") && (
+          <Image
+            source={getSupabaseFileUrl(item?.file)}
+            transition={100}
+            style={styles.postMedia}
+            contentFit="cover"
+          />
           )}
+        {/* post video */}
+
+        {item?.file && item?.file?.includes("postVideos") && (
+          <Video
+            style={[styles.postMedia, { height: hp(30) }]}
+            source={getSupabaseFileUrl(item?.file)}
+            useNativeControls
+            isLooping
+            resizeMode="cover"
+          />
+        )}
+      </View>
         </View>
       </View>
     </View>
