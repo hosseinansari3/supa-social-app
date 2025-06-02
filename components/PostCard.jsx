@@ -6,6 +6,23 @@ import Icon from "../assets/icons";
 import { theme } from "../constants/theme";
 import Avatar from "./Avatar";
 
+const textStyle = {
+  color: theme.colors.dark,
+  fontSize: hp(1.75),
+};
+
+const tagsStyle = {
+  div: textStyle,
+  p: textStyle,
+  ol: textStyle,
+  h1: {
+    color: theme.colors.dark,
+  },
+  h4: {
+    color: theme.colors.dark,
+  },
+};
+
 const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
   const shadowStyles = {
     shadowOffset: {
@@ -53,7 +70,13 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
       <View style={styles.content}>
         <View style={styles.postBody}>
           {item?.body && (
-            <RenderHTML contentWidth={wp(100)} source={{ html: item?.body }} />
+            <RenderHTML
+              contentWidth={wp(100)}
+              source={{ html: item?.body }}
+              tagsStyles={tagsStyle}
+            />
+          )}
+        </View>
           )}
         </View>
       </View>
