@@ -1,15 +1,32 @@
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
+import { fetchPosts } from "../../services/postService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
+var limit = 0;
 const home = () => {
   const { user, setAuth } = useAuth();
   const router = useRouter();
+
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    getPosts();
+  }, []);
+
+  const getPosts = async () => {
+    limit = limit + 10;
+    let res = await fetchPosts();
+    if (res.success) {
+      setPosts(res.data);
+    }
+  };
 
   // const onLogout = async () => {
   //   setAuth(null);
