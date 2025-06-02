@@ -26,6 +26,8 @@ const tagsStyle = {
   },
 };
 
+const liked = false;
+const likes = [];
 const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
   const shadowStyles = {
     shadowOffset: {
@@ -89,7 +91,7 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
             style={styles.postMedia}
             contentFit="cover"
           />
-          )}
+        )}
         {/* post video */}
 
         {item?.file && item?.file?.includes("postVideos") && (
@@ -102,6 +104,30 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
           />
         )}
       </View>
+      {/* like, comment and share */}
+      <View style={styles.footer}>
+        <View style={styles.footerButton}>
+          <TouchableOpacity>
+            <Icon
+              name="heart"
+              size={24}
+              fill={liked ? theme.colors.rose : "transparent"}
+              color={liked ? theme.colors.rose : theme.colors.textLight}
+            />
+          </TouchableOpacity>
+          <Text style={styles.count}>{likes?.length}</Text>
+        </View>
+        <View style={styles.footerButton}>
+          <TouchableOpacity>
+            <Icon name="comment" size={24} color={theme.colors.textLight} />
+          </TouchableOpacity>
+          <Text style={styles.count}>{likes?.length}</Text>
+        </View>
+        <View style={styles.footerButton}>
+          <TouchableOpacity>
+            <Icon name="share" size={24} color={theme.colors.textLight} />
+          </TouchableOpacity>
+          <Text style={styles.count}>{likes?.length}</Text>
         </View>
       </View>
     </View>
