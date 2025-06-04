@@ -40,8 +40,6 @@ const home = () => {
       )
       .subscribe();
 
-    getPosts();
-
     return () => {
       supabase.removeChannel(postChannel);
     };
@@ -107,9 +105,9 @@ const home = () => {
           )}
           ListFooterComponent={
             hasMore ? (
-            <View style={{ marginVertical: posts.length == 0 ? 200 : 30 }}>
-              <Loading />
-            </View>
+              <View style={{ marginVertical: posts.length == 0 ? 200 : 30 }}>
+                <Loading />
+              </View>
             ) : (
               <View style={{ marginVertical: 30 }}>
                 <Text style={styles.noPosts}>No more posts</Text>
