@@ -20,6 +20,7 @@ const home = () => {
   const router = useRouter();
 
   const [posts, setPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
 
   const handlePostEvent = async (payload) => {
     if (payload.eventType == "INSERT" && payload?.new?.id) {
@@ -47,9 +48,11 @@ const home = () => {
   }, []);
 
   const getPosts = async () => {
-    limit = limit + 10;
-    let res = await fetchPosts();
+    if (!hasMore) return null;
+    limit = limit + 4;
+    let res = await fetchPosts(limit);
     if (res.success) {
+      if (posts.length == res.data.length) setHasMore(false);
       setPosts(res.data);
     }
   };
@@ -103,10 +106,20 @@ const home = () => {
             <PostCard item={item} currentUser={user} router={router} />
           )}
           ListFooterComponent={
+            hasMore ? (
             <View style={{ marginVertical: posts.length == 0 ? 200 : 30 }}>
               <Loading />
             </View>
+            ) : (
+              <View style={{ marginVertical: 30 }}>
+                <Text style={styles.noPosts}>No more posts</Text>
+              </View>
+            )
           }
+          onEndReached={() => {
+            getPosts();
+          }}
+          onEndReachedThreshold={0}
         />
       </View>
     </ScreenWrapper>
@@ -141,5 +154,10 @@ const styles = StyleSheet.create({
   listStyle: {
     paddingTop: 20,
     paddingHorizontal: wp(4),
+  },
+  noPosts: {
+    fontSize: hp(2),
+    textAlign: "center",
+    color: theme.colors.text,
   },
 });
