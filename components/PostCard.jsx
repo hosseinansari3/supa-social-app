@@ -39,7 +39,9 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
     elevation: 1,
   };
 
-  const openPostDetails = () => {};
+  const openPostDetails = () => {
+    router.push({ pathname: "postDetails", params: { postId: item?.id } });
+  };
 
   const [likes, setLikes] = useState([]);
 
@@ -156,7 +158,7 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
           <Text style={styles.count}>{likes?.length}</Text>
         </View>
         <View style={styles.footerButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={openPostDetails}>
             <Icon name="comment" size={24} color={theme.colors.textLight} />
           </TouchableOpacity>
           <Text style={styles.count}>0</Text>
