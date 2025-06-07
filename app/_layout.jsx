@@ -1,5 +1,7 @@
 import { Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import { supabase } from "../lib/supabase";
@@ -8,9 +10,11 @@ import { AuthProvider, useAuth } from "./contexts/authContext";
 
 const _layout = () => {
   return (
-    <AuthProvider>
-      <MainLayout />
-    </AuthProvider>
+    <GestureHandlerRootView>
+      <AuthProvider>
+        <MainLayout />
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 };
 
