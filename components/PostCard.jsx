@@ -83,7 +83,7 @@ const PostCard = ({ item, currentUser, router, hasShadow = true }) => {
     ? true
     : false;
 
-  console.log("post item", item);
+  //console.log("post item", item);
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>
       <View style={styles.header}>
