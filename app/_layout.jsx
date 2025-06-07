@@ -38,7 +38,17 @@ const MainLayout = () => {
     if (res.success) setUserData({ ...res?.data, email });
   };
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="(main)/postDetails"
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
+        }}
+      />
+    </Stack>
+  );
 };
 
 export default _layout;
