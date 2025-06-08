@@ -1,3 +1,4 @@
+import { Icon } from "@rneui/themed";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -16,6 +17,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import CommentItem from "../../components/CommentItem";
+import Input from "../../components/Input";
+import Loading from "../../components/Loading";
 import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
@@ -28,8 +32,12 @@ const PostDetails = () => {
   console.log("got post id", postId);
   const { user } = useAuth();
   const router = useRouter();
+  const [loading, setloading] = useState(false);
+
   const [startLoading, setStartLoading] = useState(true);
   const [post, setPost] = useState(null);
+  const inputRef = useRef(null);
+  const commentRef = useRef("");
 
   useEffect(() => {
     getPostDetails();
@@ -42,6 +50,24 @@ const PostDetails = () => {
     setStartLoading(false);
   };
 
+  const onNewComment = async () => {
+    if (!commentRef.current) return null;
+    let data = {
+      userId: user?.id,
+      postId: post?.id,
+      text: commentRef.current,
+    };
+
+    setloading(true);
+    let res = await createComment(data);
+    setloading(false);
+    if (res.success) {
+      inputRef?.current?.clear();
+      commentRef.current = "";
+    } else {
+      Alert.alert("Comment", res.msg);
+    }
+  };
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       if (e.translationY > 0) {
@@ -102,6 +128,33 @@ const PostDetails = () => {
                 showMoreIcon={false}
               />
 
+              {/* comment input */}
+
+              <View style={styles.inputContainer}>
+                <Input
+                  inputRef={inputRef}
+                  onChangeText={(value) => (commentRef.current = value)}
+                  placeholder="Tyoe your comment"
+                  placeholderTextColor={theme.colors.textLight}
+                  containerStyle={{
+                    flex: 1,
+                    height: hp(6.2),
+                    borderRadius: theme.radius.xl,
+                  }}
+                />
+                {loading ? (
+                  <View style={styles.loading}>
+                    <Loading size="small" />
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.sendIcon}
+                    onPress={onNewComment}
+                  >
+                    <Icon name="send" color={theme.colors.primaryDark} />
+                  </TouchableOpacity>
+                )}
+              </View>
         </Animated.View>
       </GestureDetector>
     </ScreenWrapper>
@@ -116,12 +169,39 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingVertical: wp(7),
   },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
   list: {
     paddingHorizontal: wp(4),
+  },
+  sendIcon: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 0.8,
+    borderColor: theme.colors.primary,
+    borderRadius: theme.radius.lg,
+    borderCurve: "continuous",
+    height: hp(5.8),
+    width: hp(5.8),
   },
   center: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  notFound: {
+    fontSize: hp(2.5),
+    color: theme.colors.text,
+    fontWeight: theme.fonts.medium,
+  },
+  loading: {
+    height: hp(5.8),
+    width: hp(5.8),
+    justifyContent: "center",
+    alignItems: "center",
+    transform: [{ scale: 1.3 }],
   },
 });
