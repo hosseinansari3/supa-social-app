@@ -100,6 +100,7 @@ const PostDetails = () => {
               backgroundColor: "white",
               height: hp(100),
               borderRadius: theme.radius.md,
+              width: wp(100),
               padding: 10,
               alignSelf: "center",
               shadowOffset: {
