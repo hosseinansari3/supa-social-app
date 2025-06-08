@@ -57,8 +57,11 @@ export const fetchPostDetails = async (postId) => {
   try {
     const { data, error } = await supabase
       .from("posts")
-      .select(`*, user: users (id,  name, image), postLikes(*)`)
+      .select(
+        `*, user: users (id,  name, image), postLikes(*), comments (*, user: users(id, name, image))`
+      )
       .eq("id", postId)
+      .order("created_at", { ascending: false, referencedTable: "comments" })
       .single();
 
     if (error) {
@@ -111,6 +114,7 @@ export const createComment = async (comment) => {
     return { success: false, msg: "could not create your Comment" };
   }
 };
+
 export const removePostLike = async (postId, userId) => {
   try {
     const { error } = await supabase
