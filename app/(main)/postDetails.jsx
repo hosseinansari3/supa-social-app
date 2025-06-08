@@ -68,6 +68,8 @@ const PostDetails = () => {
       Alert.alert("Comment", res.msg);
     }
   };
+
+  const translateY = useSharedValue(0);
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
       if (e.translationY > 0) {
