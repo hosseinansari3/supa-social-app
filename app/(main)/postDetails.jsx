@@ -1,5 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StyleSheet, Text } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
@@ -8,17 +16,31 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
+import { createComment, fetchPostDetails } from "../../services/postService";
+import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
 const PostDetails = () => {
   const { postId } = useLocalSearchParams();
   console.log("got post id", postId);
-
+  const { user } = useAuth();
   const router = useRouter();
+  const [startLoading, setStartLoading] = useState(true);
+  const [post, setPost] = useState(null);
 
-  const translateY = useSharedValue(0);
+  useEffect(() => {
+    getPostDetails();
+  }, []);
+
+  const getPostDetails = async () => {
+    //feth post details
+    let res = await fetchPostDetails(postId);
+    if (res.success) setPost(res.data);
+    setStartLoading(false);
+  };
 
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -63,7 +85,23 @@ const PostDetails = () => {
             animatedStyle,
           ]}
         >
-          <Text>postDetails</Text>
+          {startLoading ? (
+            <View style={styles.center}>
+              <Loading />
+            </View>
+          ) : (
+            <ScrollView>
+              <PostCard
+                item={{
+                  ...post,
+                  comments: [{ count: post?.comments?.length }],
+                }}
+                currentUser={user}
+                router={router}
+                hasShadow={false}
+                showMoreIcon={false}
+              />
+
         </Animated.View>
       </GestureDetector>
     </ScreenWrapper>
@@ -72,4 +110,18 @@ const PostDetails = () => {
 
 export default PostDetails;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingVertical: wp(7),
+  },
+  list: {
+    paddingHorizontal: wp(4),
+  },
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
