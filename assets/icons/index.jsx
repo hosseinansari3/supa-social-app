@@ -13,6 +13,7 @@ import Lock from "./Lock";
 import Logout from "./Logout";
 import Mail from "./Mail";
 import Plus from "./Plus";
+import Send from "./Send";
 import Share from "./Share";
 import ThreeDotsHorizontal from "./ThreeDotsHorizontal";
 import User from "./User";
@@ -37,6 +38,7 @@ const icons = {
   threeDotsHorizontal: ThreeDotsHorizontal,
   comment: Comment,
   share: Share,
+  send: Send,
 };
 
 const Icon = ({ name, ...props }) => {
