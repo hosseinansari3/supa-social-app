@@ -30,6 +30,20 @@ const home = () => {
       setPosts((prevPosts) => [newPost, ...prevPosts]);
     }
   };
+
+  const handleNewComment = async (payload) => {
+    console.log("got new comment on Home", payload.new);
+    let newPosts = posts.map((post) => {
+      if (post.Id == payload.new.postId) {
+        let newPost = { ...post, comments: [...post.comments, payload.new] };
+        return newPost;
+      } else {
+        return post;
+      }
+    });
+    setPosts(newPosts);
+  };
+
   useEffect(() => {
     let postChannel = supabase
       .channel("posts")
@@ -40,8 +54,22 @@ const home = () => {
       )
       .subscribe();
 
+    let commentChannel = supabase
+      .channel("homeComments")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "comments",
+        },
+        handleNewComment
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(postChannel);
+      supabase.removeChannel(commentChannel);
     };
   }, []);
 
