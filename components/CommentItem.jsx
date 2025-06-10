@@ -1,12 +1,27 @@
 import moment from "moment";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { hp } from "../app/helpers/common";
 import Icon from "../assets/icons";
 import { theme } from "../constants/theme";
 import Avatar from "./Avatar";
 
-const CommentItem = ({ item, canDelete = false }) => {
+const CommentItem = ({ item, canDelete = false, onDelete = () => {} }) => {
   const createdAt = moment(item?.created_at).format("MMM d");
+
+  const handelDelete = () => {
+    Alert.alert("Confirm", "are you sure you want to Delete the comment?", [
+      {
+        text: "Cancel",
+        onPress: () => console.log("modal cancelled"),
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => onDelete(item),
+        style: "destructive",
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <Avatar uri={item?.user?.image} />
@@ -26,7 +41,7 @@ const CommentItem = ({ item, canDelete = false }) => {
             </Text>
           </View>
           {canDelete && (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handelDelete}>
               <Icon name="delete" size={20} color={theme.colors.rose} />
             </TouchableOpacity>
           )}

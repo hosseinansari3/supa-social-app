@@ -23,7 +23,7 @@ import Loading from "../../components/Loading";
 import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
-import { createComment, fetchPostDetails } from "../../services/postService";
+  removeComment,
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
@@ -89,6 +89,21 @@ const PostDetails = () => {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
+
+  const onDeleteComment = async (comment) => {
+    let res = await removeComment(comment?.id);
+    if (res.success) {
+      setPost((prevPost) => {
+        let updatedPost = { ...prevPost };
+        updatedPost.comments = updatedPost.comments.filter(
+          (c) => c.id != comment.id
+        );
+        return updatedPost;
+      });
+    } else {
+      Alert.alert("comment", res.msg);
+    }
+  };
 
   return (
     <ScreenWrapper>
@@ -169,6 +184,7 @@ const PostDetails = () => {
                     canDelete={
                       user.id == comment.userId || user?.id == post?.userId
                     }
+                      onDelete={onDeleteComment}
                   />
                 ))}
 
