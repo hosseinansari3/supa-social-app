@@ -12,6 +12,7 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
+  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -44,6 +45,9 @@ const PostDetails = () => {
   const [post, setPost] = useState(null);
   const inputRef = useRef(null);
   const commentRef = useRef("");
+
+  const [isTop, setIsTop] = useState(false);
+  const [isScrolling, setScrolling] = useState(false);
 
   const handleNewComment = async (payload) => {
     console.log("got new commentt", payload.new);
@@ -108,11 +112,32 @@ const PostDetails = () => {
     }
   };
 
+  const scrollRef = useRef(null);
+
+  const scrollGesture = Gesture.Native().withRef(scrollRef);
+
   const translateY = useSharedValue(0);
+  const scrollY = useSharedValue(0);
+
   const panGesture = Gesture.Pan()
+    .manualActivation(isScrolling && !isTop)
+    .onTouchesMove((e, gesture) => {
+      // Example: only activate pan if the user has moved more than 10 pixels
+
+      if (isScrolling) {
+        if (isTop) {
+          gesture.activate(); // Manually activate gesture
+        } else {
+          gesture.end();
+        }
+      }
+      console.log("move");
+    })
     .onUpdate((e) => {
-      if (e.translationY > 0) {
+      if (e.translationY >= 0) {
         translateY.value = e.translationY;
+      } else {
+        runOnJS(setIsTop)(false);
       }
     })
     .onEnd(() => {
@@ -144,6 +169,18 @@ const PostDetails = () => {
     }
   };
 
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  useEffect(() => {
+    console.log("useEffectIsTOP", isTop);
+  }, [isTop]);
+
+  const composed = Gesture.Simultaneous(panGesture, scrollGesture);
+
   return (
     <ScreenWrapper>
       <GestureDetector gesture={panGesture}>
@@ -173,67 +210,80 @@ const PostDetails = () => {
               <Loading />
             </View>
           ) : (
-            <ScrollView>
-              <PostCard
-                item={{
-                  ...post,
-                  comments: [{ count: post?.comments?.length }],
+            <GestureDetector gesture={composed}>
+              <ScrollView
+                onScroll={(e) => {
+                  setScrolling(true);
+                  if (e.nativeEvent.contentOffset.y <= 0) {
+                    setIsTop(true);
+                  } else {
+                    setIsTop(false);
+                  }
+                  console.log("ScrollPos", e.nativeEvent.contentOffset.y);
+                  console.log("isTop", isTop);
                 }}
-                currentUser={user}
-                router={router}
-                hasShadow={false}
-                showMoreIcon={false}
-              />
-
-              {/* comment input */}
-
-              <View style={styles.inputContainer}>
-                <Input
-                  inputRef={inputRef}
-                  onChangeText={(value) => (commentRef.current = value)}
-                  placeholder="Tyoe your comment"
-                  placeholderTextColor={theme.colors.textLight}
-                  containerStyle={{
-                    flex: 1,
-                    height: hp(6.2),
-                    borderRadius: theme.radius.xl,
+              >
+                <PostCard
+                  item={{
+                    ...post,
+                    comments: [{ count: post?.comments?.length }],
                   }}
+                  currentUser={user}
+                  router={router}
+                  hasShadow={false}
+                  showMoreIcon={false}
                 />
-                {loading ? (
-                  <View style={styles.loading}>
-                    <Loading size="small" />
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.sendIcon}
-                    onPress={onNewComment}
-                  >
-                    <Icon name="send" color={theme.colors.primaryDark} />
-                  </TouchableOpacity>
-                )}
-              </View>
 
-              {/* comment list */}
+                {/* comment input */}
 
-              <View style={{ marginVertical: 15, gap: 17 }}>
-                {post?.comments?.map((comment) => (
-                  <CommentItem
-                    key={comment?.id?.toString()}
-                    item={comment}
-                    canDelete={
-                      user.id == comment.userId || user?.id == post?.userId
-                    }
-                      onDelete={onDeleteComment}
+                <View style={styles.inputContainer}>
+                  <Input
+                    inputRef={inputRef}
+                    onChangeText={(value) => (commentRef.current = value)}
+                    placeholder="Tyoe your comment"
+                    placeholderTextColor={theme.colors.textLight}
+                    containerStyle={{
+                      flex: 1,
+                      height: hp(6.2),
+                      borderRadius: theme.radius.xl,
+                    }}
                   />
-                ))}
+                  {loading ? (
+                    <View style={styles.loading}>
+                      <Loading size="small" />
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.sendIcon}
+                      onPress={onNewComment}
+                    >
+                      <Icon name="send" color={theme.colors.primaryDark} />
+                    </TouchableOpacity>
+                  )}
+                </View>
 
-                {post?.comments?.length == 0 && (
-                  <Text style={{ color: theme.colors.text, marginLeft: 5 }}>
-                    Be first to comment!
-                  </Text>
-                )}
-              </View>
-            </ScrollView>
+                {/* comment list */}
+
+                <View style={{ marginVertical: 15, gap: 17 }}>
+                  {post?.comments?.map((comment) => (
+                    <CommentItem
+                      key={comment?.id?.toString()}
+                      item={comment}
+                      canDelete={
+                        user.id == comment.userId || user?.id == post?.userId
+                      }
+                      onDelete={onDeleteComment}
+                    />
+                  ))}
+
+                  {post?.comments?.length == 0 && (
+                    <Text style={{ color: theme.colors.text, marginLeft: 5 }}>
+                      Be first to comment!
+                    </Text>
+                  )}
+                </View>
+              </ScrollView>
+            </GestureDetector>
           )}
         </Animated.View>
       </GestureDetector>
