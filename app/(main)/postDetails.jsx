@@ -23,7 +23,13 @@ import Loading from "../../components/Loading";
 import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
+import { supabase } from "../../lib/supabase";
+import {
+  createComment,
+  fetchPostDetails,
   removeComment,
+} from "../../services/postService";
+import { getUserData } from "../../services/userService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
@@ -39,8 +45,41 @@ const PostDetails = () => {
   const inputRef = useRef(null);
   const commentRef = useRef("");
 
+  const handleNewComment = async (payload) => {
+    console.log("got new commentt", payload.new);
+    if (payload.new) {
+      let newComment = { ...payload.new };
+      let res = await getUserData(newComment.userId);
+      newComment.user = res.success ? res.data : {};
+      setPost((prevPost) => {
+        return {
+          ...prevPost,
+          comments: [newComment, ...prevPost.comments],
+        };
+      });
+    }
+  };
+
   useEffect(() => {
+    let commentChannel = supabase
+      .channel("comments")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "comments",
+          filter: `postId=eq.${postId}`,
+        },
+        handleNewComment
+      )
+      .subscribe();
+
     getPostDetails();
+
+    return () => {
+      supabase.removeChannel(commentChannel);
+    };
   }, []);
 
   const getPostDetails = async () => {
