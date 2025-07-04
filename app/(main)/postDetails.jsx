@@ -12,7 +12,6 @@ import {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -29,6 +28,7 @@ import {
   createComment,
   fetchPostDetails,
   removeComment,
+  removePost,
 } from "../../services/postService";
 import { getUserData } from "../../services/userService";
 import { useAuth } from "../contexts/authContext";
@@ -169,11 +169,22 @@ const PostDetails = () => {
     }
   };
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
+  const onDeletePost = async (item) => {
+    let res = await removePost(post.id);
+    if (res.success) {
+      router.back();
+    } else {
+      Alert.alert("post", res.msg);
+    }
+  };
+
+  const onEditePost = async (item) => {
+    translateY.value = withTiming(1000, { duration: 250 }, (finished) => {
+      // if (finished) runOnJS(router.back)();
+    });
+    router.back();
+    router.push({ pathname: "newPost", params: { ...item } });
+  };
 
   useEffect(() => {
     console.log("useEffectIsTOP", isTop);
@@ -232,6 +243,9 @@ const PostDetails = () => {
                   router={router}
                   hasShadow={false}
                   showMoreIcon={false}
+                  showDelete={true}
+                  onDelete={onDeletePost}
+                  onEdite={onEditePost}
                 />
 
                 {/* comment input */}
