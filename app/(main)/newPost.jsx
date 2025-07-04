@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
   Image,
   ScrollView,
@@ -25,12 +25,26 @@ import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
 const NewPost = () => {
+  const post = useLocalSearchParams();
+  console.log("post", post);
   const { user } = useAuth();
   const bodyRef = useRef("");
   const editorRef = useRef(null);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState(file);
+
+  useEffect(() => {
+    if (post && post.id) {
+      bodyRef.current = post.body;
+      setFile(post?.file || null);
+
+      setTimeout(() => {
+        editorRef?.current?.setContentHTML(post.body);
+        console.log("image", getFileUri(post?.file));
+      }, 300);
+    }
+  }, []);
 
   const onPick = async (isImage) => {
     let mediaConfig = {
@@ -79,7 +93,7 @@ const NewPost = () => {
   const getFileUri = (file) => {
     if (!file) return null;
 
-    if (isLocalFile) {
+    if (isLocalFile(file)) {
       return file.uri;
     }
 
@@ -97,6 +111,8 @@ const NewPost = () => {
       body: bodyRef.current,
       userId: user?.id,
     };
+
+    if (post && post.id) data.id = post.id;
 
     //create post
     setLoading(true);
@@ -171,7 +187,7 @@ const NewPost = () => {
         </ScrollView>
         <Button
           buttonStyle={{ height: hp(6.2) }}
-          title="Post"
+          title={post && post.id ? "update" : "Post"}
           loading={loading}
           hasShadow={false}
           onPress={onSubmit}
