@@ -24,6 +24,7 @@ import PostCard from "../../components/PostCard";
 import ScreenWrapper from "../../components/ScreenWrapper";
 import { theme } from "../../constants/theme";
 import { supabase } from "../../lib/supabase";
+import { createNotification } from "../../services/notificationService";
 import {
   createComment,
   fetchPostDetails,
@@ -35,7 +36,7 @@ import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
 const PostDetails = () => {
-  const { postId } = useLocalSearchParams();
+  const { postId, commentId } = useLocalSearchParams();
   console.log("got post id", postId);
   const { user } = useAuth();
   const router = useRouter();
@@ -105,6 +106,16 @@ const PostDetails = () => {
     let res = await createComment(data);
     setloading(false);
     if (res.success) {
+      if (user.id != post.userId) {
+        //send notification
+        let notify = {
+          senderId: user.id,
+          receiverId: post.userId,
+          title: "commented on your post",
+          data: JSON.stringify({ postId: post.id, commentId: res?.data?.id }),
+        };
+        createNotification(notify);
+      }
       inputRef?.current?.clear();
       commentRef.current = "";
     } else {
@@ -283,6 +294,7 @@ const PostDetails = () => {
                     <CommentItem
                       key={comment?.id?.toString()}
                       item={comment}
+                      highlight={comment.id == commentId}
                       canDelete={
                         user.id == comment.userId || user?.id == post?.userId
                       }
