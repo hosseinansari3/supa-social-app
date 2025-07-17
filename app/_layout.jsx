@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "react-native-url-polyfill/auto";
 import { supabase } from "../lib/supabase";
 import { getUserData } from "../services/userService";
@@ -10,11 +11,13 @@ import { AuthProvider, useAuth } from "./contexts/authContext";
 
 const _layout = () => {
   return (
-    <GestureHandlerRootView>
-      <AuthProvider>
-        <MainLayout />
-      </AuthProvider>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView>
+        <AuthProvider>
+          <MainLayout />
+        </AuthProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 };
 
