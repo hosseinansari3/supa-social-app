@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
-  ScrollView,
+  BackHandler,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -204,10 +204,21 @@ const PostDetails = () => {
   };
 
   useEffect(() => {
-    console.log("useEffectIsTOP", isTop);
-  }, [isTop]);
+    const backAction = () => {
+      translateY.value = withTiming(1000, { duration: 350 }, (finished) => {
+        if (finished) runOnJS(router.back)();
+      });
 
-  const composed = Gesture.Simultaneous(panGesture, scrollGesture);
+      return true; // prevent default behavior (i.e., going back automatically)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   return (
       <SafeAreaView>
