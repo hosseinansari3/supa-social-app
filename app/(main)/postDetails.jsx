@@ -42,7 +42,6 @@ import { hp, wp } from "../helpers/common";
 
 const PostDetails = () => {
   const { postId, commentId } = useLocalSearchParams();
-  console.log("got post id", postId);
   const { user } = useAuth();
   const router = useRouter();
   const [loading, setloading] = useState(false);
@@ -52,13 +51,12 @@ const PostDetails = () => {
   const inputRef = useRef(null);
   const commentRef = useRef("");
 
-  const [isTop, setIsTop] = useState(false);
+  const [isTop, setIsTop] = useState(true);
   const [isScrolling, setScrolling] = useState(false);
 
   const { bottom } = useSafeAreaInsets();
 
   const handleNewComment = async (payload) => {
-    console.log("got new commentt", payload.new);
     if (payload.new) {
       let newComment = { ...payload.new };
       let res = await getUserData(newComment.userId);
@@ -130,35 +128,39 @@ const PostDetails = () => {
     }
   };
 
-  const scrollRef = useRef(null);
-
-  const scrollGesture = Gesture.Native().withRef(scrollRef);
-
   const translateY = useSharedValue(0);
-  const scrollY = useSharedValue(0);
+
+  const lastY = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
-    .manualActivation(isScrolling && !isTop)
+    .manualActivation(!isScrolling && isTop)
+    .onTouchesDown((e) => {
+      const touch = e.allTouches[0];
+      lastY.value = touch.absoluteY;
+    })
     .onTouchesMove((e, gesture) => {
-      // Example: only activate pan if the user has moved more than 10 pixels
+      const touch = e.allTouches[0];
+      if (lastY.value !== null) {
+        const deltaY = touch.absoluteY - lastY.value;
 
-      if (isScrolling) {
-        if (isTop) {
-          gesture.activate(); // Manually activate gesture
-        } else {
+        if (deltaY > 0) {
+          if (isTop) {
+            gesture.activate(); // Manually activate gesture
+          } else {
+            gesture.end();
+          }
+        } else if (deltaY < 0) {
           gesture.end();
         }
       }
-      console.log("move");
     })
+
     .onUpdate((e) => {
       if (e.translationY >= 0) {
         translateY.value = e.translationY;
-      } else {
-        runOnJS(setIsTop)(false);
       }
     })
-    .onEnd(() => {
+    .onEnd((e) => {
       if (translateY.value > 200) {
         translateY.value = withTiming(1000, { duration: 250 }, (finished) => {
           if (finished) runOnJS(router.back)();
@@ -222,34 +224,36 @@ const PostDetails = () => {
   }, []);
 
   return (
+    <ScreenWrapper>
       <SafeAreaView>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View
-          style={[
-            {
-              marginTop: 20,
+        <GestureDetector gesture={panGesture}>
+          <Animated.View
+            style={[
+              { height: hp(100) },
+              {
+                marginTop: 20,
                 paddingBottom: bottom + 90,
-              backgroundColor: "white",
-              borderRadius: theme.radius.md,
-              width: wp(100),
-              padding: 10,
-              alignSelf: "center",
-              shadowOffset: {
-                width: 0,
-                height: 2,
+                backgroundColor: "white",
+                borderRadius: theme.radius.md,
+                width: wp(100),
+                padding: 10,
+                alignSelf: "center",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.06,
+                shadowRadious: 6,
+                elevation: 1,
               },
-              shadowOpacity: 0.06,
-              shadowRadious: 6,
-              elevation: 1,
-            },
-            animatedStyle,
-          ]}
-        >
-          {startLoading ? (
-            <View style={styles.center}>
-              <Loading />
-            </View>
-          ) : (
+              animatedStyle,
+            ]}
+          >
+            {startLoading ? (
+              <View style={styles.center}>
+                <Loading />
+              </View>
+            ) : (
               <KeyboardAwareScrollView
                 enableOnAndroid={true}
                 extraScrollHeight={30}
@@ -262,8 +266,6 @@ const PostDetails = () => {
                   } else {
                     setIsTop(false);
                   }
-                  console.log("ScrollPos", e.nativeEvent.contentOffset.y);
-                  console.log("isTop", isTop);
                 }}
               >
                 <PostCard
@@ -310,7 +312,12 @@ const PostDetails = () => {
 
                 {/* comment list */}
 
-                <View style={{ marginVertical: 15, gap: 17 }}>
+                <View
+                  style={{
+                    marginVertical: 15,
+                    gap: 17,
+                  }}
+                >
                   {post?.comments?.map((comment) => (
                     <CommentItem
                       key={comment?.id?.toString()}
@@ -330,9 +337,9 @@ const PostDetails = () => {
                   )}
                 </View>
               </KeyboardAwareScrollView>
-          )}
-        </Animated.View>
-      </GestureDetector>
+            )}
+          </Animated.View>
+        </GestureDetector>
       </SafeAreaView>
     </ScreenWrapper>
   );
