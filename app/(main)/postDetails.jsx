@@ -17,6 +17,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import CommentItem from "../../components/CommentItem";
 import Input from "../../components/Input";
 import Loading from "../../components/Loading";
@@ -49,6 +53,8 @@ const PostDetails = () => {
 
   const [isTop, setIsTop] = useState(false);
   const [isScrolling, setScrolling] = useState(false);
+
+  const { bottom } = useSafeAreaInsets();
 
   const handleNewComment = async (payload) => {
     console.log("got new commentt", payload.new);
@@ -204,14 +210,14 @@ const PostDetails = () => {
   const composed = Gesture.Simultaneous(panGesture, scrollGesture);
 
   return (
-    <ScreenWrapper>
+      <SafeAreaView>
       <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[
             {
               marginTop: 20,
+                paddingBottom: bottom + 90,
               backgroundColor: "white",
-              height: hp(100),
               borderRadius: theme.radius.md,
               width: wp(100),
               padding: 10,
@@ -313,6 +319,7 @@ const PostDetails = () => {
           )}
         </Animated.View>
       </GestureDetector>
+      </SafeAreaView>
     </ScreenWrapper>
   );
 };
