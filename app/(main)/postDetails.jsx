@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -249,8 +250,11 @@ const PostDetails = () => {
               <Loading />
             </View>
           ) : (
-            <GestureDetector gesture={composed}>
-              <ScrollView
+              <KeyboardAwareScrollView
+                enableOnAndroid={true}
+                extraScrollHeight={30}
+                keyboardShouldPersistTaps={"handled"}
+                showsVerticalScrollIndicator={false}
                 onScroll={(e) => {
                   setScrolling(true);
                   if (e.nativeEvent.contentOffset.y <= 0) {
@@ -325,8 +329,7 @@ const PostDetails = () => {
                     </Text>
                   )}
                 </View>
-              </ScrollView>
-            </GestureDetector>
+              </KeyboardAwareScrollView>
           )}
         </Animated.View>
       </GestureDetector>
