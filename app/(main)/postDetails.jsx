@@ -1,4 +1,3 @@
-import { Icon } from "@rneui/themed";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -22,6 +21,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import Icon from "../../assets/icons";
 import CommentItem from "../../components/CommentItem";
 import Input from "../../components/Input";
 import Loading from "../../components/Loading";
