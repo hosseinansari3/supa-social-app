@@ -26,7 +26,6 @@ import { hp, wp } from "../helpers/common";
 
 const NewPost = () => {
   const post = useLocalSearchParams();
-  console.log("post", post);
   const { user } = useAuth();
   const bodyRef = useRef("");
   const editorRef = useRef(null);
@@ -41,7 +40,6 @@ const NewPost = () => {
 
       setTimeout(() => {
         editorRef?.current?.setContentHTML(post.body);
-        console.log("image", getFileUri(post?.file));
       }, 300);
     }
   }, []);
@@ -61,8 +59,6 @@ const NewPost = () => {
     }
 
     let result = await ImagePicker.launchImageLibraryAsync(mediaConfig);
-
-    console.log("file", result.assets[0]);
 
     if (!result.canceled) {
       setFile(result.assets[0]);

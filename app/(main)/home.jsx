@@ -55,7 +55,6 @@ const home = () => {
   };
 
   const handleNewComment = async (payload) => {
-    console.log("got new comment on Home", payload.new);
     let newPosts = posts.map((post) => {
       if (post.Id == payload.new.postId) {
         let newPost = { ...post, comments: [...post.comments, payload.new] };
@@ -68,7 +67,6 @@ const home = () => {
   };
 
   const handleNewNotification = async (payload) => {
-    console.log("got new notification", payload);
     if (payload.eventType == "INSERT" && payload.new.id) {
       setNotificationCount((prev) => prev + 1);
     }

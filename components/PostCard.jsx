@@ -66,7 +66,6 @@ const PostCard = ({
       setLikes([...updatedLikes]);
 
       let res = await removePostLike(item?.id, currentUser?.id);
-      console.log("removed like: ", res);
 
       if (!res.success) {
         Alert.alert("Post", "something went wrong");
@@ -80,7 +79,6 @@ const PostCard = ({
       setLikes([...likes, data]);
 
       let res = await createPostLike(data);
-      console.log("added like: ", res);
 
       if (!res.success) {
         Alert.alert("Post", "something went wrong");

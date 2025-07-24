@@ -42,9 +42,6 @@ const SignUp = () => {
     });
     setLoading(false);
 
-    //console.log("sesstion", session);
-    //console.log("error", error);
-
     if (error) {
       Alert.alert("Sign up", error.message);
     }
@@ -71,7 +68,7 @@ const SignUp = () => {
             icon={<Icon name="user" size="26" strokeWidth="2.6" />}
             placeholder="Enter your name"
             onChangeText={(value) => (nameRef.current = value)}
-    />
+          />
           <Input
             icon={<Icon name="mail" size="26" strokeWidth="2.6" />}
             placeholder="Enter your email"
