@@ -13,9 +13,12 @@ import { hp, wp } from "./helpers/common";
 
 const Login = () => {
   const router = useRouter();
+
   const emailRef = useRef("");
   const passwordRef = useRef("");
+
   const [loading, setLoading] = useState(false);
+
   const onSubmit = async () => {
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Login", "please fill all the fields!");
@@ -31,6 +34,7 @@ const Login = () => {
       email,
       password,
     });
+
     setLoading(false);
 
     if (error) {

@@ -16,10 +16,10 @@ import { hp, wp } from "./helpers/common";
 const SignUp = () => {
   const router = useRouter();
   const nameRef = useRef("");
-
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const [loading, setLoading] = useState(false);
+
   const onSubmit = async () => {
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Sign up", "please fill all the fields!");
