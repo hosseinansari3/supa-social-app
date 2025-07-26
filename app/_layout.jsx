@@ -9,6 +9,12 @@ import { supabase } from "../lib/supabase";
 import { getUserData } from "../services/userService";
 import { AuthProvider, useAuth } from "./contexts/authContext";
 
+/**
+ * Root layout component wrapped in providers:
+ * - SafeAreaProvider for handling notches/status bars
+ * - GestureHandlerRootView for gesture support
+ * - AuthProvider for global auth state
+ */
 const _layout = () => {
   return (
     <SafeAreaProvider>
@@ -21,6 +27,13 @@ const _layout = () => {
   );
 };
 
+/**
+ * MainLayout handles:
+ * - Listening for auth state changes from Supabase
+ * - Setting global auth and user data context
+ * - Navigating based on auth state
+ * - Defining global stack screen options
+ */
 const MainLayout = () => {
   const { setAuth, setUserData } = useAuth();
   const router = useRouter();
