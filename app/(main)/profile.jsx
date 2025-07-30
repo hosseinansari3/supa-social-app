@@ -29,6 +29,7 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
 
+  // Logout user and clear auth context
   const onLogout = async () => {
     setAuth(null);
     const { error } = await supabase.auth.signOut();
@@ -37,16 +38,19 @@ const Profile = () => {
     }
   };
 
+  // Fetch posts incrementally (pagination)
   const getPosts = async () => {
     if (!hasMore) return null;
     limit = limit + 10;
     let res = await fetchPosts(limit, user.id);
     if (res.success) {
+      // Check if we've loaded all posts
       if (posts.length == res.data.length) setHasMore(false);
       setPosts(res.data);
     }
   };
 
+  // Confirm before logging out
   const handleLogout = async () => {
     // show  confirm modal
     Alert.alert("Confirm", "are you sure you want to log oug?", [
@@ -62,6 +66,7 @@ const Profile = () => {
       },
     ]);
   };
+
   return (
     <ScreenWrapper bg="white">
       <FlatList
@@ -101,6 +106,7 @@ const UserHeader = ({ user, router, handleLogout }) => {
     <View
       style={{ flex: 1, backgroundColor: "white", paddingHorizontal: wp(4) }}
     >
+      {/* Logout button top-right corner */}
       <View>
         <Header title="profile" mb={30} />
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -108,6 +114,7 @@ const UserHeader = ({ user, router, handleLogout }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Avatar and edit profile button */}
       <View style={styles.container}>
         <View style={{ gap: 15 }}>
           <View style={styles.avatarContainer}>
@@ -125,14 +132,12 @@ const UserHeader = ({ user, router, handleLogout }) => {
           </View>
 
           {/* username and address */}
-
           <View style={{ alignItems: "center", gap: 4 }}>
             <Text style={styles.userName}> {user && user?.name} </Text>
             <Text style={styles.infoText}> {user && user?.address} </Text>
           </View>
 
           {/* email, phone and bio */}
-
           <View style={{ gap: 10 }}>
             <View style={styles.info}>
               <Icon name="mail" size={20} color={theme.colors.textLight} />

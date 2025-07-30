@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Animated, {
@@ -21,6 +22,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+
 import Icon from "../../assets/icons";
 import CommentItem from "../../components/CommentItem";
 import Input from "../../components/Input";
@@ -44,18 +46,21 @@ const PostDetails = () => {
   const { postId, commentId } = useLocalSearchParams();
   const { user } = useAuth();
   const router = useRouter();
-  const [loading, setloading] = useState(false);
-
-  const [startLoading, setStartLoading] = useState(true);
-  const [post, setPost] = useState(null);
-  const inputRef = useRef(null);
-  const commentRef = useRef("");
-
-  const [isTop, setIsTop] = useState(true);
-  const [isScrolling, setScrolling] = useState(false);
-
   const { bottom } = useSafeAreaInsets();
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  })); //animated style for modal
 
+  const [loading, setloading] = useState(false); // for comment submission
+  const [startLoading, setStartLoading] = useState(true); // for initial post fetch
+  const [post, setPost] = useState(null); // post and comments data
+  const [isTop, setIsTop] = useState(true); // to determine gesture activation
+  const [isScrolling, setScrolling] = useState(false); // disable gesture when scrolling
+
+  const inputRef = useRef(null); // ref to input field
+  const commentRef = useRef(""); // track comment input without causing re-renders
+
+  // Handle real-time comment insertion from Supabase
   const handleNewComment = async (payload) => {
     if (payload.new) {
       let newComment = { ...payload.new };
@@ -71,6 +76,7 @@ const PostDetails = () => {
   };
 
   useEffect(() => {
+    // Subscribe comment INSERT events to Supabase
     let commentChannel = supabase
       .channel("comments")
       .on(
@@ -88,7 +94,7 @@ const PostDetails = () => {
     getPostDetails();
 
     return () => {
-      supabase.removeChannel(commentChannel);
+      supabase.removeChannel(commentChannel); // cleanup on unmount
     };
   }, []);
 
@@ -111,8 +117,8 @@ const PostDetails = () => {
     let res = await createComment(data);
     setloading(false);
     if (res.success) {
+      // Notify post owner if commenter is someone else
       if (user.id != post.userId) {
-        //send notification
         let notify = {
           senderId: user.id,
           receiverId: post.userId,
@@ -128,12 +134,12 @@ const PostDetails = () => {
     }
   };
 
-  const translateY = useSharedValue(0);
+  const translateY = useSharedValue(0); // control vertical drag
+  const lastY = useSharedValue(0); // track drag start point
 
-  const lastY = useSharedValue(0);
-
+  // Pan gesture to close modal when dragged down from top
   const panGesture = Gesture.Pan()
-    .manualActivation(!isScrolling && isTop)
+    .manualActivation(!isScrolling && isTop) // allow gesture only if not scrolling and at top
     .onTouchesDown((e) => {
       const touch = e.allTouches[0];
       lastY.value = touch.absoluteY;
@@ -163,16 +169,12 @@ const PostDetails = () => {
     .onEnd((e) => {
       if (translateY.value > 200) {
         translateY.value = withTiming(1000, { duration: 250 }, (finished) => {
-          if (finished) runOnJS(router.back)();
+          if (finished) runOnJS(router.back)(); // trigger back navigation
         });
       } else {
-        translateY.value = withSpring(0); // snap back
+        translateY.value = withSpring(0); // // snap back if drag not far enough
       }
     });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
 
   const onDeleteComment = async (comment) => {
     let res = await removeComment(comment?.id);
@@ -189,7 +191,7 @@ const PostDetails = () => {
     }
   };
 
-  const onDeletePost = async (item) => {
+  const onDeletePost = async () => {
     let res = await removePost(post.id);
     if (res.success) {
       router.back();
@@ -207,6 +209,7 @@ const PostDetails = () => {
   };
 
   useEffect(() => {
+    //pull down modal and go back on android hardware button press
     const backAction = () => {
       translateY.value = withTiming(1000, { duration: 350 }, (finished) => {
         if (finished) runOnJS(router.back)();
@@ -220,7 +223,7 @@ const PostDetails = () => {
       backAction
     );
 
-    return () => backHandler.remove();
+    return () => backHandler.remove(); // cleanup listener
   }, []);
 
   return (
@@ -283,7 +286,6 @@ const PostDetails = () => {
                 />
 
                 {/* comment input */}
-
                 <View style={styles.inputContainer}>
                   <Input
                     inputRef={inputRef}
@@ -311,7 +313,6 @@ const PostDetails = () => {
                 </View>
 
                 {/* comment list */}
-
                 <View
                   style={{
                     marginVertical: 15,
