@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+
 import Icon from "../../assets/icons";
 import Avatar from "../../components/Avatar";
 import Loading from "../../components/Loading";
@@ -13,18 +14,20 @@ import { getUserData } from "../../services/userService";
 import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
-var limit = 0;
-const home = () => {
-  const { user, setAuth } = useAuth();
+var limit = 0; // limit for fetching post
 
+const home = () => {
+  const { user } = useAuth();
   const router = useRouter();
 
   const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [notificationCount, setNotificationCount] = useState(0);
 
+  // Handle Supabase realtime events for post changes
   const handlePostEvent = async (payload) => {
     if (payload.eventType == "INSERT" && payload?.new?.id) {
+      //prepend new post
       let newPost = { ...payload.new };
       let res = await getUserData(newPost.userId);
       newPost.postLikes = [];
@@ -32,7 +35,9 @@ const home = () => {
       newPost.user = res.success ? res.data : {};
       setPosts((prevPosts) => [newPost, ...prevPosts]);
     }
+
     if (payload.eventType == "DELETE" && payload.old.id) {
+      // Remove deleted post
       setPosts((prevPosts) => {
         let updatedPosts = prevPosts.filter(
           (post) => post.id !== payload.old.id
@@ -41,6 +46,7 @@ const home = () => {
       });
     }
     if (payload.eventType == "UPDATE" && payload?.new?.id) {
+      // Update post content
       setPosts((prevPosts) => {
         let updatePosts = prevPosts.map((post) => {
           if (post.id == payload?.new?.id) {
@@ -54,9 +60,11 @@ const home = () => {
     }
   };
 
+  // Handle new comment insertion
   const handleNewComment = async (payload) => {
     let newPosts = posts.map((post) => {
       if (post.Id == payload.new.postId) {
+        // Append comment to the correct post
         let newPost = { ...post, comments: [...post.comments, payload.new] };
         return newPost;
       } else {
@@ -66,12 +74,16 @@ const home = () => {
     setPosts(newPosts);
   };
 
+  // Increment notification count on new insert
   const handleNewNotification = async (payload) => {
     if (payload.eventType == "INSERT" && payload.new.id) {
       setNotificationCount((prev) => prev + 1);
     }
   };
+
   useEffect(() => {
+    // Subscribe to realtime channels
+
     let postChannel = supabase
       .channel("posts")
       .on(
@@ -108,6 +120,7 @@ const home = () => {
       )
       .subscribe();
 
+    // Clean up subscriptions on unmount
     return () => {
       supabase.removeChannel(postChannel);
       supabase.removeChannel(commentChannel);
@@ -115,28 +128,26 @@ const home = () => {
     };
   }, []);
 
+  // Fetch posts with pagination
   const getPosts = async () => {
     if (!hasMore) return null;
+
     limit = limit + 4;
     let res = await fetchPosts(limit);
+
     if (res.success) {
+      // Check if all posts have been loaded
       if (posts.length == res.data.length) setHasMore(false);
       setPosts(res.data);
     }
   };
 
-  // const onLogout = async () => {
-  //   setAuth(null);
-  //   const { error } = await supabase.auth.signOut();
-  //   if (error) {
-  //     Alert.alert("sign out", "error signing out");
-  //   }
-  // };
   return (
     <ScreenWrapper bg="white">
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>LinkUp</Text>
+          {/* icons */}
           <View style={styles.icons}>
             <Pressable onPress={() => router.push("notifications")}>
               <Icon
@@ -169,6 +180,7 @@ const home = () => {
             </Pressable>
           </View>
         </View>
+
         {/* posts */}
         <FlatList
           data={posts}

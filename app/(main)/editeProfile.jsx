@@ -1,5 +1,6 @@
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+// External imports from libraries
+import * as ImagePicker from "expo-image-picker"; // Import image picker for media library access
+import { useRouter } from "expo-router"; // For navigation
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -10,6 +11,8 @@ import {
   Text,
   View,
 } from "react-native";
+
+// Project assets and components
 import Icon from "../../assets/icons";
 import Button from "../../components/Button";
 import Header from "../../components/Header";
@@ -25,6 +28,7 @@ const EditeProfile = () => {
   const { user: currentUser, setUserData } = useAuth();
   const router = useRouter();
 
+  // Initialize local user state with default values
   const [user, setUser] = useState({
     name: "",
     phoneNumber: "",
@@ -33,9 +37,10 @@ const EditeProfile = () => {
     address: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Track loading state during form submission
 
   useEffect(() => {
+    // Populate user state with current user data from context
     if (currentUser) {
       setUser({
         name: currentUser.name || "",
@@ -47,6 +52,7 @@ const EditeProfile = () => {
     }
   }, [currentUser]);
 
+  // Handles image selection from device library
   const onPickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images", "videos"],
@@ -56,47 +62,57 @@ const EditeProfile = () => {
     });
 
     if (!result.canceled) {
+      // Update user state with the selected image
       setUser({ ...user, image: result.assets[0] });
     }
   };
 
+  // Validate inputs and submit updated profile data
   const onSubmit = async () => {
     let userData = { ...user };
     let { name, phoneNumber, address, image, bio } = userData;
 
+    // Frontend validation: ensure all required fields are filled
     if (!name || !phoneNumber || !address || !bio || !image) {
       Alert.alert("profile", "please fill all the fields");
       return;
     }
-    setLoading(true);
 
+    setLoading(true); // Start loading
+
+    // If the image is a new local file, upload it first
     if (typeof image == "object") {
-      //upload image
-
       let imageRes = await uploadFile("profiles", image?.uri, true);
-      if (imageRes.success) userData.image = imageRes.data;
-      else userData.image = null;
+      if (imageRes.success)
+        userData.image = imageRes.data; // Replace with uploaded image URL
+      else userData.image = null; // Clear image on failure to prevent broken URLs
     }
-    //update user
+
+    // Call service to update user in backend
     const res = await updateUser(currentUser?.id, userData);
-    setLoading(false);
+    setLoading(false); // Stop loading regardless of success/failure
 
     if (res.success) {
+      // Update user context and go back
       setUserData({ ...currentUser, ...userData });
       router.back();
     }
+    // Consider handling errors (e.g., showing Alert on failure)
   };
+
+  // Determine correct image source for <Image> component
   let imageSource =
     user.image && typeof user.image == "object"
       ? { uri: user.image.uri }
       : getUserImageSrc(user.image);
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }}>
           <Header title="Edite Profile" />
 
-          {/* form */}
+          {/* Profile form section */}
 
           <View style={styles.form}>
             <View style={styles.avatarContainer}>
@@ -108,24 +124,32 @@ const EditeProfile = () => {
             <Text style={{ fontSize: hp(1.5), color: theme.colors.text }}>
               Please fill your profile details
             </Text>
+
+            {/* Name input */}
             <Input
               icon={<Icon name="user" />}
               placeholder="Enter your name"
               value={user.name}
               onChangeText={(value) => setUser({ ...user, name: value })}
             />
+
+            {/* Phone input */}
             <Input
               icon={<Icon name="call" />}
               placeholder="Enter your phone number"
               value={user.phoneNumber}
               onChangeText={(value) => setUser({ ...user, phoneNumber: value })}
             />
+
+            {/* Address input */}
             <Input
               icon={<Icon name="location" />}
               placeholder="Enter your location"
               value={user.address}
               onChangeText={(value) => setUser({ ...user, address: value })}
             />
+
+            {/* Bio input */}
             <Input
               placeholder="Enter your bio"
               value={user.bio}
@@ -133,6 +157,8 @@ const EditeProfile = () => {
               containerStyle={styles.bio}
               onChangeText={(value) => setUser({ ...user, bio: value })}
             />
+
+            {/* Submit button */}
             <Button title="Update" loading={loading} onPress={onSubmit} />
           </View>
         </ScrollView>
@@ -143,15 +169,16 @@ const EditeProfile = () => {
 
 export default EditeProfile;
 
+// Style definitions
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: wp(4),
+    paddingHorizontal: wp(4), // Responsive padding
   },
   avatarContainer: {
     height: hp(14),
     width: hp(14),
-    alignSelf: "center",
+    alignSelf: "center", // Center avatar in parent view
   },
   avatar: {
     width: "100%",

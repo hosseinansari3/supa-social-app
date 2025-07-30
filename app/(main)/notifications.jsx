@@ -15,11 +15,11 @@ const Notifications = () => {
   const router = useRouter();
 
   useEffect(() => {
-    getNotifications();
+    getNotifications(); // Fetch on mount
   }, []);
 
   const getNotifications = async () => {
-    let res = await fetchNotification(user.id);
+    let res = await fetchNotification(user?.id);
     if (res.success) setNotifications(res.data);
   };
 
@@ -31,11 +31,14 @@ const Notifications = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listStyle}
         >
+          {/* Render list */}
           {notifications.map((item) => {
             return (
               <NotificationItem item={item} key={item?.id} router={router} />
             );
           })}
+
+          {/* Empty state */}
           {notifications.length == 0 && (
             <Text style={styles.nodata}>no notifications yet</Text>
           )}
