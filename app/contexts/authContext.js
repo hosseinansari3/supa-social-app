@@ -1,10 +1,13 @@
 import { createContext, useContext, useState } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(); // Create a context for authentication state
+
+// Provider component to wrap around components that need auth access
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // Stores the current user object
 
+  // Use this to set or clear the authenticated user
   const setAuth = (authUser) => {
     setUser(authUser);
   };
@@ -19,4 +22,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+//  Custom hook to consume auth context
 export const useAuth = () => useContext(AuthContext);

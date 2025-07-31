@@ -28,6 +28,16 @@ const tagsStyle = {
   },
 };
 
+const shadowStyles = {
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.06,
+  shadowRadious: 6,
+  elevation: 1,
+};
+
 const PostCard = ({
   item,
   currentUser,
@@ -38,35 +48,33 @@ const PostCard = ({
   onDelete = () => {},
   onEdite = () => {},
 }) => {
-  const shadowStyles = {
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.06,
-    shadowRadious: 6,
-    elevation: 1,
-  };
+  const [likes, setLikes] = useState([]);
+
+  // Format post creation date
+  const createdAt = moment(item?.created_at).format("MMM D");
+
+  // Determine if current user has liked the post
+  const liked = likes.filter((like) => like.userId == currentUser?.id)[0]
+    ? true
+    : false;
+
+  useEffect(() => {
+    // Set initial likes from post data
+    setLikes(item?.postLikes);
+  }, []);
 
   const openPostDetails = () => {
     if (!showMoreIcon) return null;
     router.push({ pathname: "postDetails", params: { postId: item?.id } });
   };
 
-  const [likes, setLikes] = useState([]);
-
-  useEffect(() => {
-    setLikes(item?.postLikes);
-  }, []);
-
   const onLike = async () => {
+    // Toggle like/unlike and sync with backend
     if (liked) {
       let updatedLikes = likes.filter((like) => like.userId != currentUser?.id);
-
       setLikes([...updatedLikes]);
 
       let res = await removePostLike(item?.id, currentUser?.id);
-
       if (!res.success) {
         Alert.alert("Post", "something went wrong");
       }
@@ -75,23 +83,17 @@ const PostCard = ({
         userId: currentUser?.id,
         postId: item?.id,
       };
-
       setLikes([...likes, data]);
 
       let res = await createPostLike(data);
-
       if (!res.success) {
         Alert.alert("Post", "something went wrong");
       }
     }
   };
 
-  const createdAt = moment(item?.created_at).format("MMM D");
-  const liked = likes.filter((like) => like.userId == currentUser?.id)[0]
-    ? true
-    : false;
-
   const handlePostDelete = () => {
+    // Confirm before deleting post
     Alert.alert("Confirm", "are you sure you want to Delete the post?", [
       {
         text: "Cancel",
@@ -105,6 +107,7 @@ const PostCard = ({
       },
     ]);
   };
+
   return (
     <View style={[styles.container, hasShadow && shadowStyles]}>
       <View style={styles.header}>
@@ -120,6 +123,8 @@ const PostCard = ({
             <Text style={styles.postTime}>{createdAt}</Text>
           </View>
         </View>
+
+        {/* Show options if enabled */}
         {showMoreIcon && (
           <TouchableOpacity onPress={openPostDetails}>
             <Icon
@@ -131,6 +136,7 @@ const PostCard = ({
           </TouchableOpacity>
         )}
 
+        {/* Show edit/delete buttons if allowed */}
         {showDelete && currentUser?.id == item?.userId && (
           <View style={styles.actions}>
             <TouchableOpacity onPress={() => onEdite(item)}>
@@ -144,7 +150,6 @@ const PostCard = ({
       </View>
 
       {/* post body and media */}
-
       <View style={styles.content}>
         <View style={styles.postBody}>
           {item?.body && (
@@ -155,8 +160,8 @@ const PostCard = ({
             />
           )}
         </View>
-        {/* post image */}
 
+        {/* post image */}
         {item?.file && item?.file?.includes("postImages") && (
           <Image
             source={getSupabaseFileUrl(item?.file)}
@@ -165,8 +170,8 @@ const PostCard = ({
             contentFit="cover"
           />
         )}
-        {/* post video */}
 
+        {/* post video */}
         {item?.file && item?.file?.includes("postVideos") && (
           <Video
             style={[styles.postMedia, { height: hp(30) }]}
@@ -177,6 +182,7 @@ const PostCard = ({
           />
         )}
       </View>
+
       {/* like, comment and share */}
       <View style={styles.footer}>
         <View style={styles.footerButton}>

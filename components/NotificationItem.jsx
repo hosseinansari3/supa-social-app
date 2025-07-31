@@ -6,21 +6,28 @@ import Avatar from "./Avatar";
 
 const NotificationItem = ({ item, router }) => {
   const handleClick = () => {
-    // open post details
+    //  Parse data to extract post and comment IDs, then navigate to post details
     let { postId, commentId } = JSON.parse(item?.data);
     router.push({ pathname: "postDetails", params: { postId, commentId } });
   };
 
+  //  Format creation date to "Month Day" (e.g., "Jul 30")
   const createAt = moment(item?.created_at).format("MMM d");
+
   return (
     <TouchableOpacity style={styles.container} onPress={handleClick}>
+      {/* sender's avatar */}
       <Avatar uri={item?.sender?.image} size={hp(5)} />
+
+      {/* sender name and notification title */}
       <View style={styles.nameTitle}>
         <Text style={styles.text}>{item?.sender?.name}</Text>
         <Text style={[styles.text, { color: theme.colors.textDark }]}>
           {item?.title}
         </Text>
       </View>
+
+      {/*  formatted creation date */}
       <Text style={[styles.text, { color: theme.colors.textLight }]}>
         {createAt}
       </Text>

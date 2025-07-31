@@ -9,6 +9,7 @@ import { theme } from "../constants/theme";
 const RichTextEditor = ({ editorRef, onChange }) => {
   return (
     <View style={{ minHeight: 285 }}>
+      {/* Rich text toolbar with customizable actions */}
       <RichToolbar
         actions={[
           actions.setStrikethrough,
@@ -25,6 +26,7 @@ const RichTextEditor = ({ editorRef, onChange }) => {
           actions.heading1,
           actions.heading4,
         ]}
+        // Custom icons for specific actions (H1 and H4)
         iconMap={{
           [actions.heading1]: ({ tintColor }) => (
             <Text style={{ color: tintColor }}>H1</Text>
@@ -39,6 +41,8 @@ const RichTextEditor = ({ editorRef, onChange }) => {
         editor={editorRef}
         disabled={false}
       />
+
+      {/* Main rich text input editor */}
       <RichEditor
         ref={editorRef}
         containerStyle={styles.rich}
@@ -53,11 +57,13 @@ const RichTextEditor = ({ editorRef, onChange }) => {
 export default RichTextEditor;
 
 const styles = StyleSheet.create({
+  // Toolbar styling
   richBar: {
     borderTopRightRadius: theme.radius.xl,
     borderTopLeftRadius: theme.radius.xl,
     backgroundColor: theme.colors.gray,
   },
+  // Editor container style
   rich: {
     minHeight: 240,
     flex: 1,
@@ -68,6 +74,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.gray,
     padding: 5,
   },
+  // Styling for editor content
   contentStyle: {
     color: theme.colors.textDark,
     placeholderColor: "gray",

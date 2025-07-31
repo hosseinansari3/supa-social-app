@@ -7,13 +7,15 @@ import Avatar from "./Avatar";
 
 const CommentItem = ({
   item,
-  canDelete = false,
+  canDelete = false, // Controls visibility of delete icon
   onDelete = () => {},
-  highlight = false,
+  highlight = false, //  Apply visual emphasis (e.g., when comment is focused)
 }) => {
+  // Format comment date to readable short form
   const createdAt = moment(item?.created_at).format("MMM d");
 
   const handelDelete = () => {
+    //  Confirm comment deletion with modal
     Alert.alert("Confirm", "are you sure you want to Delete the comment?", [
       {
         text: "Cancel",
@@ -27,9 +29,13 @@ const CommentItem = ({
       },
     ]);
   };
+
   return (
     <View style={styles.container}>
+      {/*  User avatar */}
       <Avatar uri={item?.user?.image} />
+
+      {/*  Comment card */}
       <View style={[styles.content, highlight && styles.highlight]}>
         <View
           style={{
@@ -38,6 +44,7 @@ const CommentItem = ({
             alignItems: "center",
           }}
         >
+          {/* Username and date */}
           <View style={styles.nameContainer}>
             <Text style={styles.text}>{item?.user?.name}</Text>
             <Text>.</Text>
@@ -45,12 +52,16 @@ const CommentItem = ({
               {createdAt}
             </Text>
           </View>
+
+          {/* Conditionally show delete button if user has permission */}
           {canDelete && (
             <TouchableOpacity onPress={handelDelete}>
               <Icon name="delete" size={20} color={theme.colors.rose} />
             </TouchableOpacity>
           )}
         </View>
+
+        {/* Comment text */}
         <Text style={[styles.text, { fontWeight: "normal" }]}>
           {item?.text}
         </Text>
