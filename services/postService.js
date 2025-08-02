@@ -1,18 +1,25 @@
 import { supabase } from "../lib/supabase";
 import { uploadFile } from "./imageService";
 
+/**
+ * Creates or updates a post in the Supabase database.
+ * If the post includes a file (image/video), it uploads it first.
+ */
 export const createOrUpadtePost = async (post) => {
   try {
+    // Upload media file if present and is a file object
     if (post.file && typeof post.file == "object") {
       let isImage = post.file.type == "image";
       let folderName = isImage ? "postImages" : "postVideos";
       let fileResult = await uploadFile(folderName, post?.file?.uri, isImage);
       if (fileResult.success) post.file = fileResult.data;
       else {
+        // Return early if file upload failed
         return fileResult;
       }
     }
 
+    // Upsert post (insert or update if it exists)
     const { data, error } = await supabase
       .from("posts")
       .upsert(post)
@@ -31,6 +38,10 @@ export const createOrUpadtePost = async (post) => {
   }
 };
 
+/**
+ * Fetches a list of posts from Supabase.
+ * Optionally filters by userId.
+ */
 export const fetchPosts = async (limit = 10, userId) => {
   try {
     if (userId) {
@@ -71,6 +82,9 @@ export const fetchPosts = async (limit = 10, userId) => {
   }
 };
 
+/**
+ * Fetches a single post with all related data (user, likes, comments).
+ */
 export const fetchPostDetails = async (postId) => {
   try {
     const { data, error } = await supabase
@@ -93,6 +107,10 @@ export const fetchPostDetails = async (postId) => {
     return { success: false, msg: "could not fetch the post" };
   }
 };
+
+/**
+ * Likes a post by inserting a row in the postLikes table.
+ */
 export const createPostLike = async (postLike) => {
   try {
     const { data, error } = await supabase
@@ -113,6 +131,9 @@ export const createPostLike = async (postLike) => {
   }
 };
 
+/**
+ * Creates a comment associated with a post.
+ */
 export const createComment = async (comment) => {
   try {
     const { data, error } = await supabase
@@ -133,6 +154,9 @@ export const createComment = async (comment) => {
   }
 };
 
+/**
+ * Removes a like from a post for a specific user.
+ */
 export const removePostLike = async (postId, userId) => {
   try {
     const { error } = await supabase
@@ -153,6 +177,9 @@ export const removePostLike = async (postId, userId) => {
   }
 };
 
+/**
+ * Deletes a comment by its ID.
+ */
 export const removeComment = async (commentId) => {
   try {
     const { error } = await supabase
@@ -172,6 +199,9 @@ export const removeComment = async (commentId) => {
   }
 };
 
+/**
+ * Deletes a post by its ID.
+ */
 export const removePost = async (postId) => {
   try {
     const { error } = await supabase.from("posts").delete().eq("id", postId);
