@@ -1,9 +1,12 @@
 import moment from "moment";
+import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { hp } from "../app/helpers/common";
 import Icon from "../assets/icons";
 import { theme } from "../constants/theme";
+import { supabase } from "../lib/supabase";
 import { fetchCommentDetails } from "../services/postService";
+import { getUserData } from "../services/userService";
 import Avatar from "./Avatar";
 
 const CommentItem = ({
@@ -33,6 +36,44 @@ const CommentItem = ({
       },
     ]);
   };
+
+  // Handle real-time comment reply insertion from Supabase
+  const handleNewReply = async (payload) => {
+    if (payload.new && payload.new.commentId === item.id) {
+      let newReply = { ...payload.new };
+
+      // Fetch user data for the reply
+      let userRes = await getUserData(newReply.userId);
+      if (userRes.success) {
+        newReply.user = userRes.data;
+      }
+
+      setCommentReplies((prevReplies) => {
+        return [...prevReplies, newReply];
+      });
+    }
+  };
+
+  useEffect(() => {
+    // Subscribe comment reply INSERT events to Supabase
+    let commentReplyChannel = supabase
+      .channel(`comment_replies_${item.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "comment_replies",
+          filter: `commentId=eq.${item?.id}`,
+        },
+        handleNewReply
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(commentReplyChannel); // cleanup on unmount
+    };
+  }, [[item.id]]);
 
   const fetchComment = async () => {
     const res = await fetchCommentDetails(item?.id);
@@ -68,12 +109,12 @@ const CommentItem = ({
           </View>
 
           <View style={styles.icons}>
-          {/* Conditionally show delete button if user has permission */}
-          {canDelete && (
-            <TouchableOpacity onPress={handelDelete}>
-              <Icon name="delete" size={20} color={theme.colors.rose} />
-            </TouchableOpacity>
-          )}
+            {/* Conditionally show delete button if user has permission */}
+            {canDelete && (
+              <TouchableOpacity onPress={handelDelete}>
+                <Icon name="delete" size={20} color={theme.colors.rose} />
+              </TouchableOpacity>
+            )}
 
             {/* ai reply button */}
             <TouchableOpacity
