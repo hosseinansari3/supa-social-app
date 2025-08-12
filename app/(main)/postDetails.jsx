@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Alert,
   BackHandler,
@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Animated, {
@@ -34,6 +35,7 @@ import { supabase } from "../../lib/supabase";
 import { createNotification } from "../../services/notificationService";
 import {
   createComment,
+  createCommentReply,
   fetchPostDetails,
   removeComment,
   removePost,
@@ -53,12 +55,70 @@ const PostDetails = () => {
 
   const [loading, setloading] = useState(false); // for comment submission
   const [startLoading, setStartLoading] = useState(true); // for initial post fetch
+  const [aiResLoading, setAiResLoading] = useState(false); // for AI response
+  const [aiResSendLoading, setAiResSendLoading] = useState(false); // for AI response
+
   const [post, setPost] = useState(null); // post and comments data
   const [isTop, setIsTop] = useState(true); // to determine gesture activation
   const [isScrolling, setScrolling] = useState(false); // disable gesture when scrolling
+  const [suggestedReplies, setSuggestedReplies] = useState("");
+  const [commentToRepy, setCommentToRepy] = useState(null);
 
   const inputRef = useRef(null); // ref to input field
   const commentRef = useRef(""); // track comment input without causing re-renders
+
+  //url to supabase edge function for deepseek api
+  const supabaseUrl =
+    "https://gmncnveewizprdiiscya.supabase.co/functions/v1/ai-reply-proxy";
+
+  // fetch ai replies from deepseek
+  const getAiReplies = async (commentText) => {
+    try {
+      const response = await fetch(supabaseUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ commentText }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      return data.choices[0].message.content;
+    } catch (error) {
+      console.error("Failed to get AI reply:", error);
+      return "Error fetching reply.";
+    }
+  };
+
+  const bottomSheetRef = useRef(null);
+
+  // callbacks
+  const handleSheetChanges = useCallback((index) => {
+    console.log("handleSheetChanges", index);
+  }, []);
+
+  const handlePresentSheet = useCallback(() => {
+    bottomSheetRef.current?.expand(); // opens bottomSheet
+  }, []);
+
+  const handleCloseSheet = useCallback(() => {
+    bottomSheetRef.current?.close(); // close bottomSheet
+  }, []);
+
+  const handleAiIconPress = async (commentText, commentId) => {
+    setCommentToRepy(commentId);
+    setAiResLoading(true);
+    handlePresentSheet(); // Open the bottom sheet immediately
+
+    const replies = await getAiReplies(commentText);
+
+    console.log("replies", replies);
+    setSuggestedReplies(replies);
+    setAiResLoading(false);
+  };
 
   // Handle real-time comment insertion from Supabase
   const handleNewComment = async (payload) => {
@@ -134,8 +194,23 @@ const PostDetails = () => {
     }
   };
 
-  const translateY = useSharedValue(0); // control vertical drag
-  const lastY = useSharedValue(0); // track drag start point
+  const onNewCommentReply = async () => {
+    let data = {
+      userId: user?.id,
+      commentId: commentToRepy,
+      text: suggestedReplies,
+    };
+
+    setAiResSendLoading(true);
+    let res = await createCommentReply(data);
+    setAiResSendLoading(false);
+    handleCloseSheet();
+    if (res.success) {
+      console.log("comment send success");
+    } else {
+      Alert.alert("Comment", res.msg);
+    }
+  };
 
   // Pan gesture to close modal when dragged down from top
   const panGesture = Gesture.Pan()
@@ -323,6 +398,7 @@ const PostDetails = () => {
                     <CommentItem
                       key={comment?.id?.toString()}
                       item={comment}
+                      handleAiIconPress={handleAiIconPress}
                       highlight={comment.id == commentId}
                       canDelete={
                         user.id == comment.userId || user?.id == post?.userId
@@ -342,6 +418,45 @@ const PostDetails = () => {
           </Animated.View>
         </GestureDetector>
       </SafeAreaView>
+      <BottomSheet
+        snapPoints={["25%"]}
+        ref={bottomSheetRef}
+        onChange={handleSheetChanges}
+        style={styles.shadow}
+        index={-1}
+        enablePanDownToClose
+        b
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          {aiResLoading ? (
+            <View style={styles.center}>
+              <Loading />
+            </View>
+          ) : (
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ marginRight: 8 }}>{suggestedReplies}</Text>
+              {aiResSendLoading ? (
+                <View style={styles.loading}>
+                  <Loading size="small" />
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.sendIcon}
+                  onPress={onNewCommentReply}
+                >
+                  <Icon name="send" size={20} color={theme.colors.rose} />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+        </BottomSheetView>
+      </BottomSheet>
     </ScreenWrapper>
   );
 };
@@ -388,5 +503,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     transform: [{ scale: 1.3 }],
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 36,
+    alignItems: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 36,
+    alignItems: "center",
+  },
+  shadow: {
+    // iOS
+    shadowColor: "#0000",
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.9,
+    shadowRadius: 816.0,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: "rgba(0,0,0,0.3)",
+
+    // Android
+    elevation: 8,
   },
 });

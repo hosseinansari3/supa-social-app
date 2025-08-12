@@ -1,4 +1,5 @@
 import { StyleSheet, Text } from "react-native";
+import Ai from "./Ai";
 import Back from "./Back";
 import Call from "./Call";
 import Camera from "./Camera";
@@ -39,6 +40,7 @@ const icons = {
   comment: Comment,
   share: Share,
   send: Send,
+  ai: Ai,
 };
 
 const Icon = ({ name, ...props }) => {

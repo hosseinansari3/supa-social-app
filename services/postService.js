@@ -155,6 +155,58 @@ export const createComment = async (comment) => {
 };
 
 /**
+ * Creates a reply associated with a comment.
+ */
+export const createCommentReply = async (reply) => {
+  try {
+    const { data, error } = await supabase
+      .from("comment_replies")
+      .insert(reply)
+      .select()
+      .single();
+
+    if (error) {
+      console.log("createCommentReply error", error);
+      return { success: false, msg: "could not create your Comment Reply" };
+    }
+
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("createCommentReply error", error);
+    return { success: false, msg: "could not create your Comment Reply" };
+  }
+};
+
+/**
+ * Fetches a single comment with all related data (user, comment replies ...).
+ */
+export const fetchCommentDetails = async (commentId) => {
+  try {
+    const { data, error } = await supabase
+      .from("comments")
+      .select(
+        `*, user: users (id,  name, image), comment_replies (*, user: users(id, name, image))`
+      )
+      .eq("id", commentId)
+      .order("created_at", {
+        ascending: false,
+        referencedTable: "comment_replies",
+      })
+      .single();
+
+    if (error) {
+      console.log("fetchCommentDetails error", error);
+      return { success: false, msg: "could not fetch the Comment" };
+    }
+
+    return { success: true, data: data };
+  } catch (error) {
+    console.log("fetchCommentDetails error", error);
+    return { success: false, msg: "could not fetch the Comment" };
+  }
+};
+
+/**
  * Removes a like from a post for a specific user.
  */
 export const removePostLike = async (postId, userId) => {
