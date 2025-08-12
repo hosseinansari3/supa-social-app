@@ -45,6 +45,9 @@ import { useAuth } from "../contexts/authContext";
 import { hp, wp } from "../helpers/common";
 
 const PostDetails = () => {
+  const translateY = useSharedValue(0); // control vertical drag
+  const lastY = useSharedValue(0); // track drag start point
+
   const { postId, commentId } = useLocalSearchParams();
   const { user } = useAuth();
   const router = useRouter();
