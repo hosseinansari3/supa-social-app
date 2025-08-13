@@ -189,7 +189,7 @@ export const fetchCommentDetails = async (commentId) => {
       )
       .eq("id", commentId)
       .order("created_at", {
-        ascending: false,
+        ascending: true,
         referencedTable: "comment_replies",
       })
       .single();
